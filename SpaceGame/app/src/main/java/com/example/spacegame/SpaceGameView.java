@@ -81,27 +81,45 @@ public class SpaceGameView extends SurfaceView implements Runnable{
     private void update()
     {
         spaceShip.update(fps);
-        playerMovement();
     }
 
-    @SuppressLint("ClickableViewAccessibility") // Will fix this warning
-    private void playerMovement()
-    {
-        this.setOnTouchListener((view, motionEvent) -> {
-            switch(motionEvent.getAction())
-            {
-                case MotionEvent.ACTION_DOWN:
-                    spaceShip.setMovingState(spaceShip.UP);
-                    break;
-                case MotionEvent.ACTION_UP:
-                    spaceShip.setMovingState(spaceShip.STOPPED);
-                    break;
-                default:
-                    break;
-            }
+    @Override
+    public boolean onTouchEvent(MotionEvent motionEvent) {
+        switch(motionEvent.getAction() & MotionEvent.ACTION_MASK)
+        {
+            case MotionEvent.ACTION_DOWN:
+                paused = false;
+                if(motionEvent.getY() < this.screenY - this.screenY / 2f)
+                {
+                    if(motionEvent.getX() > this.screenX / 2f)
+                    {
+                        spaceShip.setMovingState(spaceShip.RIGHT);
+                    }else
+                    {
+                        spaceShip.setMovingState(spaceShip.LEFT);
+                    }
+                }
 
-            return false;
-        });
+                if(motionEvent.getY() > this.screenY - this.screenY / 2f)
+                {
+                    if(motionEvent.getX() < this.screenX / 2f)
+                    {
+                        spaceShip.setMovingState(spaceShip.UP);
+                    }else {
+                        spaceShip.setMovingState(spaceShip.DOWN);
+                    }
+                }
+
+
+                break;
+            case MotionEvent.ACTION_UP:
+                spaceShip.setMovingState(spaceShip.STOPPED);
+                break;
+            default:
+                break;
+        }
+
+        return true;
     }
 
     private void draw(){
@@ -111,10 +129,10 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             canvas = ourHolder.lockCanvas();
             canvas.drawColor(Color.argb(255, 26, 128, 182));
 
-            canvas.drawBitmap(spaceShip.getBitmap(), spaceShip.getX(), screenY / 2f, paint);
+            canvas.drawBitmap(spaceShip.getBitmap(), spaceShip.getX(), spaceShip.getY(), paint);
 
             paint.setColor(Color.argb(255,  249, 129, 0));
-            paint.setTextSize(60);
+            paint.setTextSize(40);
             canvas.drawText("Score: " + score + "   Lives: " +
                     lives, 10,50, paint);
 

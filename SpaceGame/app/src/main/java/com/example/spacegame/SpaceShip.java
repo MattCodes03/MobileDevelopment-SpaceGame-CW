@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.RectF;
+import android.os.Debug;
+import android.util.Log;
 
 public class SpaceShip {
     RectF rect;
@@ -13,6 +15,9 @@ public class SpaceShip {
 
     float x;
     float y;
+
+    int screenX;
+    int screenY;
 
     float shipSpeed;
     int spaceshipMoving;
@@ -55,6 +60,9 @@ public class SpaceShip {
         this.bitmapUp = Bitmap.createScaledBitmap(bitmapUp, (int) (length), (int) (height),false);
 
         this.currentBitmap = this.bitmapRight;
+
+        this.screenX = screenX;
+        this.screenY = screenY;
 
     }
 
@@ -105,6 +113,20 @@ public class SpaceShip {
 
     public float getX(){
         return this.x;
+    }
+
+    public float getY() {
+        return this.y;
+    }
+
+    public void setX(float x)
+    {
+        this.x = x;
+    }
+
+    public void setY(float y)
+    {
+        this.y = y;
     }
 
     public float getLength(){
