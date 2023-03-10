@@ -22,7 +22,7 @@ public class SpaceShip {
     float shipSpeed;
     int spaceShipMoving;
 
-    float health = 100f;
+    float health;
 
     Bitmap bitmapUp;
     Bitmap bitmapLeft;
@@ -44,6 +44,8 @@ public class SpaceShip {
 
         this.x = screenX / 2f;
         this.y = screenY / 2f;
+
+        this.health = 100f;
 
         this.shipSpeed = 350;
 
