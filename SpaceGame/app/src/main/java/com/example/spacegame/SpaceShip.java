@@ -134,4 +134,14 @@ public class SpaceShip {
     public float getLength(){
         return this.length;
     }
+
+    public float getHealth()
+    {
+        return this.health;
+    }
+
+    public void setHealth(float health)
+    {
+        this.health = health;
+    }
 }
