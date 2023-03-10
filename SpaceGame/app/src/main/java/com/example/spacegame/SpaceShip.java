@@ -20,7 +20,7 @@ public class SpaceShip {
     int screenY;
 
     float shipSpeed;
-    int spaceshipMoving;
+    int spaceShipMoving;
 
     float health = 100f;
 
@@ -68,12 +68,12 @@ public class SpaceShip {
 
     public void setMovingState(int state)
     {
-        this.spaceshipMoving = state;
+        this.spaceShipMoving = state;
     }
 
     public void update(long fps)
     {
-        switch (this.spaceshipMoving)
+        switch (this.spaceShipMoving)
         {
             case LEFT:
                 this.x = this.x - this.shipSpeed / fps;
