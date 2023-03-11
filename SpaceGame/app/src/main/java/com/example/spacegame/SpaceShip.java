@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.RectF;
 import android.os.Debug;
 import android.util.Log;
+import android.view.SurfaceHolder;
 
 public class SpaceShip {
     RectF rect;
@@ -109,7 +110,6 @@ public class SpaceShip {
     }
 
     public Bitmap getBitmap(){
-
         return this.currentBitmap;
     }
 

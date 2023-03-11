@@ -1,5 +1,7 @@
 package com.example.spacegame;
 
+import kotlin.NotImplementedError;
+
 public class GameManager {
     enum GameState
     {
@@ -17,12 +19,23 @@ public class GameManager {
             case EnemySwarmPhase:
                 break;
             case BossBattlePhase:
+                startBossBattlePhase();
                 break;
             case GameEnd:
+                startEndGamePhase();
                 break;
             default:
                 break;
 
         }
+    }
+    private void startBossBattlePhase()
+    {
+        throw new NotImplementedError();
+    }
+
+    private void startEndGamePhase()
+    {
+        throw new NotImplementedError();
     }
 }

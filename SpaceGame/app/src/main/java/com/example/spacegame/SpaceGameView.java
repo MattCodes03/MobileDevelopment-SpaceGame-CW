@@ -89,7 +89,7 @@ public class SpaceGameView extends SurfaceView implements Runnable{
         {
             case MotionEvent.ACTION_DOWN:
                 paused = false;
-                if(motionEvent.getY() < this.screenY - this.screenY / 2f)
+                if(motionEvent.getY() > this.screenY - this.screenY / 2f)
                 {
                     if(motionEvent.getX() > this.screenX / 2f)
                     {
@@ -100,7 +100,7 @@ public class SpaceGameView extends SurfaceView implements Runnable{
                     }
                 }
 
-                if(motionEvent.getY() > this.screenY - this.screenY / 2f)
+                if(motionEvent.getY() < this.screenY - this.screenY / 2f)
                 {
                     if(motionEvent.getX() < this.screenX / 2f)
                     {
