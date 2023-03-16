@@ -102,7 +102,8 @@ public class SpaceGameView extends SurfaceView implements Runnable{
     private void update()
     {
         spaceShip.update(fps);
-
+        checkForCollision();
+        
         if(spaceShip.getHealth() <= 0 && this.lives > 0)
         {
             this.lives--;
@@ -117,6 +118,10 @@ public class SpaceGameView extends SurfaceView implements Runnable{
         for (Bomb bomb : bombs) {
             bomb.update(fps);
         }
+    }
+
+    private void checkForCollision() {
+        //TODO: Code Logic to prevent player moving off screen
     }
 
     private void endGame(String status)

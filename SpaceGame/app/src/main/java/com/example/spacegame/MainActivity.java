@@ -24,7 +24,6 @@ public class MainActivity extends Activity {
         Point size = new Point();
         display.getSize(size);
 
-
         spaceGameView = new SpaceGameView(this, size.x, size.y);
         setContentView(spaceGameView);
 
