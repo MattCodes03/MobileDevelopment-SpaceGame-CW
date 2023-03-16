@@ -142,6 +142,6 @@ public class SpaceShip {
 
     public void setHealth(float health)
     {
-        this.health = health;
+        this.health += health;
     }
 }

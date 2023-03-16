@@ -27,7 +27,6 @@ public class MainActivity extends Activity {
 
         spaceGameView = new SpaceGameView(this, size.x, size.y);
         setContentView(spaceGameView);
-        //spaceGameView.setBackground(AppCompatResources.getDrawable(this, R.drawable.background));
 
     }
     // This method executes when the player starts the game

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.RectF;
+import android.view.SurfaceHolder;
 
 public class Bomb extends Projectile{
 
@@ -13,8 +14,8 @@ public class Bomb extends Projectile{
 
     Bitmap bitmap;
 
-    Bomb(Context context, int x, int y, int screenX, int screenY, float damage) {
-        super(context, x, y, screenX, screenY, damage);
+    Bomb(Context context, int x, int y, float damage, ProjectileType type) {
+        super(context, x, y, damage, type);
 
         this.x = x;
         this.y = y;
@@ -23,8 +24,8 @@ public class Bomb extends Projectile{
         this.bitmap = Bitmap.createScaledBitmap(bitmap, (int) (length), (int) (height),false);
     }
 
-    public void draw()
+    public void update(long fps)
     {
-        super.draw(this.x, this.y, this.bitmap);
+        super.update(fps);
     }
 }
