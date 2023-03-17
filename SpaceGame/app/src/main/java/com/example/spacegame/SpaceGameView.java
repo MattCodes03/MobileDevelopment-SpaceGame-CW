@@ -121,7 +121,19 @@ public class SpaceGameView extends SurfaceView implements Runnable{
     }
 
     private void checkForCollision() {
-        //TODO: Code Logic to prevent player moving off screen
+        if (spaceShip.getX() > screenX - spaceShip.getLength()) {
+            spaceShip.setMovingState(spaceShip.STOPPED);
+        }
+        if (spaceShip.getX() < 0 + spaceShip.getLength()) {
+            spaceShip.setMovingState(spaceShip.STOPPED);
+        }
+
+        if (spaceShip.getY() > screenY - spaceShip.getLength()) {
+            spaceShip.setMovingState(spaceShip.STOPPED);
+        }
+        if (spaceShip.getY() < 0 + spaceShip.getLength()) {
+            spaceShip.setMovingState(spaceShip.STOPPED);
+        }
     }
 
     private void endGame(String status)
