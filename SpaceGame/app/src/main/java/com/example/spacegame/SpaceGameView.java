@@ -50,6 +50,8 @@ public class SpaceGameView extends SurfaceView implements Runnable{
         super(context);
         this.context = context;
 
+
+
         ourHolder = getHolder();
         paint = new Paint();
         screenX = x;
