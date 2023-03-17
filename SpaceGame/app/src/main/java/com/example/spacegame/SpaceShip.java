@@ -21,7 +21,6 @@ public class SpaceShip {
     int screenY;
 
     float shipSpeed;
-    int spaceShipMoving;
 
     float health;
 
@@ -31,11 +30,16 @@ public class SpaceShip {
     Bitmap bitmapDown;
     Bitmap currentBitmap;
 
-    final int STOPPED = 0;
-    final int LEFT = 1;
-    final int RIGHT = 2;
-    final int UP = 3;
-    final int DOWN = 4;
+    public enum movingState
+    {
+        STOPPED,
+        LEFT,
+        RIGHT,
+        UP,
+        DOWN
+    }
+
+    movingState spaceShipMoving;
 
     public SpaceShip(Context context, int screenX, int screenY) {
         this.rect = new RectF();
@@ -67,9 +71,11 @@ public class SpaceShip {
         this.screenX = screenX;
         this.screenY = screenY;
 
+        this.spaceShipMoving = movingState.STOPPED;
+
     }
 
-    public void setMovingState(int state)
+    public void setMovingState(movingState state)
     {
         this.spaceShipMoving = state;
     }

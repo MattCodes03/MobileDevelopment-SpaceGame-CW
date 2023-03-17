@@ -89,14 +89,12 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             }
             draw();
 
-
             long timeThis = System.currentTimeMillis() - startTime;
             if (timeThis >= 1) {
                 fps = 1000 / timeThis;
             }
 
         }
-
     }
 
     private void update()
@@ -122,17 +120,17 @@ public class SpaceGameView extends SurfaceView implements Runnable{
 
     private void checkForCollision() {
         if (spaceShip.getX() > screenX - spaceShip.getLength()) {
-            spaceShip.setMovingState(spaceShip.STOPPED);
+            spaceShip.setMovingState(SpaceShip.movingState.STOPPED);
         }
         if (spaceShip.getX() < 0 + spaceShip.getLength()) {
-            spaceShip.setMovingState(spaceShip.STOPPED);
+            spaceShip.setMovingState(SpaceShip.movingState.STOPPED);
         }
 
         if (spaceShip.getY() > screenY - spaceShip.getLength()) {
-            spaceShip.setMovingState(spaceShip.STOPPED);
+            spaceShip.setMovingState(SpaceShip.movingState.STOPPED);
         }
         if (spaceShip.getY() < 0 + spaceShip.getLength()) {
-            spaceShip.setMovingState(spaceShip.STOPPED);
+            spaceShip.setMovingState(SpaceShip.movingState.STOPPED);
         }
     }
 
@@ -153,10 +151,10 @@ public class SpaceGameView extends SurfaceView implements Runnable{
                 {
                     if(motionEvent.getX() > this.screenX / 2f)
                     {
-                        spaceShip.setMovingState(spaceShip.RIGHT);
+                        spaceShip.setMovingState(SpaceShip.movingState.RIGHT);
                     }else
                     {
-                        spaceShip.setMovingState(spaceShip.LEFT);
+                        spaceShip.setMovingState(SpaceShip.movingState.LEFT);
                     }
                 }
 
@@ -164,16 +162,16 @@ public class SpaceGameView extends SurfaceView implements Runnable{
                 {
                     if(motionEvent.getX() < this.screenX / 2f)
                     {
-                        spaceShip.setMovingState(spaceShip.UP);
+                        spaceShip.setMovingState(SpaceShip.movingState.UP);
                     }else {
-                        spaceShip.setMovingState(spaceShip.DOWN);
+                        spaceShip.setMovingState(SpaceShip.movingState.DOWN);
                     }
                 }
 
 
                 break;
             case MotionEvent.ACTION_UP:
-                spaceShip.setMovingState(spaceShip.STOPPED);
+                spaceShip.setMovingState(SpaceShip.movingState.STOPPED);
                 break;
             default:
                 break;
