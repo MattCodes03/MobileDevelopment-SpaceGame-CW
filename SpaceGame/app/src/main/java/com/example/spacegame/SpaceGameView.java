@@ -196,7 +196,7 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             }
 
 
-            paint.setColor(Color.argb(255,  249, 129, 0));
+            paint.setColor(Color.argb(255,  240, 219, 31));
             paint.setTextSize(40);
             canvas.drawText("Score: " + score + "   Lives: " +
                     lives, 10,50, paint);
