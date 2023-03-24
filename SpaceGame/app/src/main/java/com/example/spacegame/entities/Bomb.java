@@ -1,10 +1,6 @@
-package com.example.spacegame;
+package com.example.spacegame.entities;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.RectF;
-import android.view.SurfaceHolder;
 
 public class Bomb extends Projectile{
 
@@ -12,7 +8,7 @@ public class Bomb extends Projectile{
     int x;
     int y;
 
-    Bomb(Context context, int x, int y, float damage, ProjectileType type) {
+    public Bomb(Context context, int x, int y, float damage, ProjectileType type) {
         super(context, x, y, damage, type);
 
         this.x = x;

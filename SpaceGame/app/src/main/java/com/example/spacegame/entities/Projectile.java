@@ -1,14 +1,9 @@
-package com.example.spacegame;
+package com.example.spacegame.entities;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.RectF;
-import android.util.Log;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
+
+import com.example.spacegame.SpaceGameView;
 
 public class Projectile {
     RectF rect;
@@ -26,7 +21,7 @@ public class Projectile {
 
     ProjectileType type;
 
-    enum ProjectileType
+    public enum ProjectileType
     {
         Bomb,
         Bullet
@@ -46,6 +41,8 @@ public class Projectile {
         this.damage = damage;
 
         this.type = type;
+
+        this.isActive = false;
 
         player = SpaceGameView.getPlayer();
     }
@@ -77,7 +74,7 @@ public class Projectile {
         if(this.rect.intersect(player.getRect()) && this.isActive)
         {
                 this.isActive = false;
-                player.setHealth(-this.damage);
+                player.takeDamage(this.damage);
         }
 
 
@@ -90,5 +87,10 @@ public class Projectile {
 
     public void setActive() {
         this.isActive = true;
+    }
+
+    public RectF getRect()
+    {
+        return this.rect;
     }
 }

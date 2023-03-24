@@ -1,4 +1,4 @@
-package com.example.spacegame;
+package com.example.spacegame.entities;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -7,6 +7,8 @@ import android.graphics.RectF;
 import android.os.Debug;
 import android.util.Log;
 import android.view.SurfaceHolder;
+
+import com.example.spacegame.R;
 
 public class SpaceShip {
     RectF rect;
@@ -146,8 +148,11 @@ public class SpaceShip {
         return this.health;
     }
 
+    public void takeDamage(float damage){
+        this.health -= damage;
+    }
     public void setHealth(float health)
     {
-        this.health += health;
+        this.health = health;
     }
 }
