@@ -36,5 +36,6 @@ public class Bullet extends Projectile{
 
     private void fireBullet() {
         // TODO: Implement functionality for bullet to move along screen if fired
+
     }
 }

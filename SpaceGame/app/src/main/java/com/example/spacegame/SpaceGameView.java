@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.Toast;
 
 import com.example.spacegame.entities.Bomb;
 import com.example.spacegame.entities.Bullet;
@@ -44,6 +45,11 @@ public class SpaceGameView extends SurfaceView implements Runnable{
     Bomb[] bombs;
 
     Healable[] healables;
+    private static int bombsDetonated = 0;
+    private static int healsConsumed = 0;
+
+    private int currentWave = 1;
+    private int waveEnemies;
 
 
     public SpaceGameView(Context context, int x, int y) {
@@ -61,6 +67,16 @@ public class SpaceGameView extends SurfaceView implements Runnable{
         initLevel();
     }
 
+    public static void updateBombsDetonatedCount()
+    {
+        bombsDetonated++;
+    }
+
+    public static void updateHealsConsumedCount()
+    {
+        healsConsumed++;
+    }
+
 
     private void initLevel()
     {
@@ -69,6 +85,8 @@ public class SpaceGameView extends SurfaceView implements Runnable{
 
         bombs = new Bomb[3];
         healables = new Healable[3];
+
+        waveEnemies = 3;
 
         for(int i = 0; i < 3; i++)
         {
@@ -85,6 +103,9 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             healables[i] = new Healable(context, healX, healY);
             healables[i].setActive();
         }
+
+        Toast wavePopUp = Toast.makeText(context, "Wave: "+Integer.toString(this.currentWave), Toast.LENGTH_SHORT);
+        wavePopUp.show();
     }
 
     public static SpaceShip getPlayer()
@@ -133,6 +154,11 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             endGame("Defeat");
         }
 
+        if(this.currentWave == 8 && this.waveEnemies <= 0)
+        {
+            endGame("Victory");
+        }
+
         for (Bomb bomb : bombs) {
             bomb.update(fps);
         }
@@ -166,7 +192,11 @@ public class SpaceGameView extends SurfaceView implements Runnable{
 
     private void endGame(String status)
     {
-        Log.d("End", "Defeated");
+        /*
+          @param Status - This determines whether the game ends as a victory or defeat, we want to pass this alongside the stats
+          TODO: Using an Intent pass the game statistics to the End Game Screen, and end this activity while starting the EndScreenActivity.
+            We want to pass this.score, bombsDetonated, healsConsumed and the parameter status
+         */
 
         this.pause();
     }
@@ -182,18 +212,14 @@ public class SpaceGameView extends SurfaceView implements Runnable{
                     if(motionEvent.getX() > this.screenX / 2f)
                     {
                         spaceShip.setMovingState(SpaceShip.movingState.RIGHT);
-                        if(!bullet.getStatus())
-                        {
-                            bullet.setActive();
-                        }
                     }else
                     {
                         spaceShip.setMovingState(SpaceShip.movingState.LEFT);
-                        if(!bullet.getStatus())
-                        {
-                            bullet.setActive();
-                        }
 
+                    }
+                    if(!bullet.getStatus())
+                    {
+                        bullet.setActive();
                     }
                 }
 
@@ -202,16 +228,12 @@ public class SpaceGameView extends SurfaceView implements Runnable{
                     if(motionEvent.getX() < this.screenX / 2f)
                     {
                         spaceShip.setMovingState(SpaceShip.movingState.UP);
-                        if(!bullet.getStatus())
-                        {
-                            bullet.setActive();
-                        }
                     }else {
                         spaceShip.setMovingState(SpaceShip.movingState.DOWN);
-                        if(!bullet.getStatus())
-                        {
-                            bullet.setActive();
-                        }
+                    }
+                    if(!bullet.getStatus())
+                    {
+                        bullet.setActive();
                     }
                 }
 

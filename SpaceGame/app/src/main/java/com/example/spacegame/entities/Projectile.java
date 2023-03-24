@@ -75,9 +75,12 @@ public class Projectile {
         {
                 this.isActive = false;
                 player.takeDamage(this.damage);
+
+                if(this.type == ProjectileType.Bomb)
+                {
+                    SpaceGameView.updateBombsDetonatedCount();
+                }
         }
-
-
     }
 
     public boolean getStatus()

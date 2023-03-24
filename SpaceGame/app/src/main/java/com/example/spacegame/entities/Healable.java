@@ -50,6 +50,8 @@ public class Healable{
         {
             this.isActive = false;
             player.setHealth(110);
+
+            SpaceGameView.updateHealsConsumedCount();
         }
     }
 
