@@ -217,10 +217,6 @@ public class SpaceGameView extends SurfaceView implements Runnable{
                         spaceShip.setMovingState(SpaceShip.movingState.LEFT);
 
                     }
-                    if(!bullet.getStatus())
-                    {
-                        bullet.setActive();
-                    }
                 }
 
                 if(motionEvent.getY() < this.screenY - this.screenY / 2f)
@@ -231,16 +227,17 @@ public class SpaceGameView extends SurfaceView implements Runnable{
                     }else {
                         spaceShip.setMovingState(SpaceShip.movingState.DOWN);
                     }
-                    if(!bullet.getStatus())
-                    {
-                        bullet.setActive();
-                    }
                 }
-
-
                 break;
             case MotionEvent.ACTION_UP:
                 spaceShip.setMovingState(SpaceShip.movingState.STOPPED);
+                break;
+            case MotionEvent.ACTION_POINTER_DOWN:
+                if(!bullet.getStatus())
+                {
+                    bullet.setActive();
+                    //Log.d("Calling pew","call");
+                }
                 break;
             default:
                 break;
