@@ -62,7 +62,6 @@ public class Projectile {
         this.rect.top = y;
         this.rect.bottom = y + height;
     }
-
     private void checkForCollisionWithEnemy()
     {
     }
@@ -91,6 +90,8 @@ public class Projectile {
     public void setActive() {
         this.isActive = true;
     }
+
+    public void setInactive(){ this.isActive = false;}
 
     public RectF getRect()
     {
