@@ -17,6 +17,9 @@ public class Bullet extends Projectile{
     float x;
     float y;
 
+    float shooting_x;
+    float shooting_y;
+
     boolean hasBeenFired;
 
     float bulletSpeed;
@@ -29,6 +32,8 @@ public class Bullet extends Projectile{
 
         this.bulletSpeed = 400f;
         this.hasBeenFired = false;
+        shooting_x = player.getX();
+        shooting_y = player.getY();
     }
 
     public void update(long fps)
@@ -42,26 +47,24 @@ public class Bullet extends Projectile{
     }
 
     private void fireBullet(long fps) {
-        this.x = getPlayer().getX();
-        this.y= getPlayer().getY();
         Log.d("Bull X val",""+this.x);
         Log.d("Ship X val",""+getPlayer().getX());
         switch (getPlayer().spaceShipMoving)
         {
             case LEFT:
-                this.x = this.x - this.bulletSpeed / fps;
+                this.shooting_x = this.shooting_x - this.bulletSpeed / fps;
                 Log.d("Left", "Pew");
                 break;
             case RIGHT:
-                this.x = this.x + this.bulletSpeed / fps;
+                this.shooting_x = this.shooting_x + this.bulletSpeed / fps;
                 Log.d("Right", "Pew");
                 break;
             case UP:
-                this.y = this.y - this.bulletSpeed / fps;
+                this.shooting_y = this.shooting_y - this.bulletSpeed / fps;
                 Log.d("Up", "Pew");
                 break;
             case DOWN:
-                this.y = this.y + this.bulletSpeed / fps;
+                this.shooting_y = this.shooting_y + this.bulletSpeed / fps;
                 Log.d("Down", "Pew");
                 break;
             default:
@@ -76,4 +79,7 @@ public class Bullet extends Projectile{
 
         return bulletBitmap;
     }
+
+    public float getShootingX(){return shooting_x;}
+    public float getShootingY(){return shooting_y;}
 }

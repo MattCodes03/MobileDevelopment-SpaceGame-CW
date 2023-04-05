@@ -264,7 +264,7 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             if(bullet.getStatus())
             {
                 paint.setColor(Color.argb(255, 255, 255, 0));
-                canvas.drawBitmap(bullet.getBitmap(), bullet.getX(), bullet.getY() , paint);
+                canvas.drawBitmap(bullet.getBitmap(), bullet.getShootingX(), bullet.getShootingY() , paint);
             }
 
             // Draw Bombs
