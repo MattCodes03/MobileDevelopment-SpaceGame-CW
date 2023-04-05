@@ -8,10 +8,10 @@ import com.example.spacegame.SpaceGameView;
 public class Healable extends Projectile{
 
     float damage;
-    int x;
-    int y;
+    float x;
+    float y;
 
-    public Healable(Context context, int x, int y, float damage, ProjectileType type) {
+    public Healable(Context context, float x, float y, float damage, ProjectileType type) {
         super(context, x, y, damage, type);
 
         this.x = x;

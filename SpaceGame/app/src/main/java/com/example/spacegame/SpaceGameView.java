@@ -81,7 +81,7 @@ public class SpaceGameView extends SurfaceView implements Runnable{
     private void initLevel()
     {
         spaceShip = new SpaceShip(context, screenX, screenY);
-        bullet = new Bullet(context, screenX, screenY, 50, Projectile.ProjectileType.Bullet);
+        bullet = new Bullet(context, spaceShip.getX(), spaceShip.getY(), 50, Projectile.ProjectileType.Bullet);
 
         bombs = new Bomb[3];
         healables = new Healable[3];
@@ -264,7 +264,7 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             if(bullet.getStatus())
             {
                 paint.setColor(Color.argb(255, 255, 255, 0));
-                canvas.drawRect(bullet.getRect(), paint);
+                canvas.drawBitmap(bullet.getBitmap(), bullet.getX(), bullet.getY() , paint);
             }
 
             // Draw Bombs

@@ -3,9 +3,13 @@ package com.example.spacegame.entities;
 import static com.example.spacegame.SpaceGameView.getPlayer;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Debug;
 import android.os.Handler;
 import android.util.Log;
+
+import com.example.spacegame.R;
 
 public class Bullet extends Projectile{
 
@@ -17,7 +21,7 @@ public class Bullet extends Projectile{
 
     float bulletSpeed;
 
-    public Bullet(Context context, int x, int y, float damage, ProjectileType type) {
+    public Bullet(Context context, float x, float y, float damage, ProjectileType type) {
         super(context, x, y, damage, type);
 
         this.x = x;
@@ -38,7 +42,6 @@ public class Bullet extends Projectile{
     }
 
     private void fireBullet(long fps) {
-        // TODO: Implement functionality for bullet to move along screen if fired
         this.x = getPlayer().getX();
         this.y= getPlayer().getY();
         Log.d("Bull X val",""+this.x);
@@ -65,5 +68,12 @@ public class Bullet extends Projectile{
                 break;
         }
         Log.d("X now ",""+this.x);
+    }
+
+    public Bitmap getBitmap() {
+        Bitmap bulletBitmap = BitmapFactory.decodeResource(super.context.getResources(), R.drawable.spaceshipleft);
+        bulletBitmap = Bitmap.createScaledBitmap(bulletBitmap, (int) (length), (int) (height),false);
+
+        return bulletBitmap;
     }
 }

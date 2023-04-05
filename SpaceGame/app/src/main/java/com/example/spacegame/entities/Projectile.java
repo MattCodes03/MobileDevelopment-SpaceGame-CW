@@ -6,13 +6,14 @@ import android.graphics.RectF;
 import com.example.spacegame.SpaceGameView;
 
 public class Projectile {
+    Context context;
     RectF rect;
 
     float height;
     float length;
 
-    int x;
-    int y;
+    float x;
+    float y;
     float damage;
 
     private boolean isActive;
@@ -21,6 +22,8 @@ public class Projectile {
 
     ProjectileType type;
 
+
+
     public enum ProjectileType
     {
         Bomb,
@@ -28,10 +31,12 @@ public class Projectile {
         Bullet
     }
 
-    Projectile(Context context, int x, int y, float damage, ProjectileType type)
+    Projectile(Context context, float x, float y, float damage, ProjectileType type)
     {
 
         this.rect = new RectF();
+
+        this.context = context;
 
         this.x = x;
         this.y = y;
@@ -105,5 +110,15 @@ public class Projectile {
     public RectF getRect()
     {
         return this.rect;
+    }
+
+    public float getX()
+    {
+        return this.x;
+    }
+
+    public float getY()
+    {
+        return this.y;
     }
 }
