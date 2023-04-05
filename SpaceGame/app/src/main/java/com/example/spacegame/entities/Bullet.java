@@ -71,7 +71,7 @@ public class Bullet extends Projectile{
     }
 
     public Bitmap getBitmap() {
-        Bitmap bulletBitmap = BitmapFactory.decodeResource(super.context.getResources(), R.drawable.spaceshipleft);
+        Bitmap bulletBitmap = BitmapFactory.decodeResource(super.context.getResources(), R.drawable.bullet);
         bulletBitmap = Bitmap.createScaledBitmap(bulletBitmap, (int) (length), (int) (height),false);
 
         return bulletBitmap;
