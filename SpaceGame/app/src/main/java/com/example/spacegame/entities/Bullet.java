@@ -22,6 +22,8 @@ public class Bullet extends Projectile{
 
     boolean hasBeenFired;
 
+    SpaceShip.movingState bulletHeading;
+
     float bulletSpeed;
 
     public Bullet(Context context, float x, float y, float damage, ProjectileType type) {
@@ -30,7 +32,7 @@ public class Bullet extends Projectile{
         this.x = player.getX();
         this.y = player.getY();
 
-        this.bulletSpeed = 400f;
+        this.bulletSpeed = 2000f;
         this.hasBeenFired = false;
         shooting_x = player.getX();
         shooting_y = player.getY();
@@ -41,39 +43,29 @@ public class Bullet extends Projectile{
         this.x = player.getX();
         this.y = player.getY();
 
-        if(getStatus())
-        {
-            fireBullet(fps);
-        }
-
-        super.update(fps);
+       if(getStatus())
+       {
+           switch(bulletHeading){
+               case LEFT:
+                   this.shooting_x = this.shooting_x - this.bulletSpeed / fps;
+                   break;
+               case RIGHT:
+                   this.shooting_x = this.shooting_x + this.bulletSpeed / fps;
+                   break;
+               case UP:
+                   this.shooting_y = this.shooting_y - this.bulletSpeed / fps;
+                   break;
+               case DOWN:
+                   this.shooting_y = this.shooting_y + this.bulletSpeed / fps;
+                   break;
+           }
+       }
+       super.update(fps);
     }
 
-    private void fireBullet(long fps) {
-        Log.d("Bull X val",""+this.x);
-        Log.d("Ship X val",""+getPlayer().getX());
-        switch (getPlayer().spaceShipMoving)
-        {
-            case LEFT:
-                this.shooting_x = this.shooting_x - this.bulletSpeed / fps;
-                Log.d("Left", "Pew");
-                break;
-            case RIGHT:
-                this.shooting_x = this.shooting_x + this.bulletSpeed / fps;
-                Log.d("Right", "Pew");
-                break;
-            case UP:
-                this.shooting_y = this.shooting_y - this.bulletSpeed / fps;
-                Log.d("Up", "Pew");
-                break;
-            case DOWN:
-                this.shooting_y = this.shooting_y + this.bulletSpeed / fps;
-                Log.d("Down", "Pew");
-                break;
-            default:
-                break;
-        }
-        Log.d("X now ",""+this.x);
+    public void fireBullet(long fps, SpaceShip.movingState direction) {
+        this.setActive();
+        this.bulletHeading = direction;
     }
 
     public Bitmap getBitmap() {

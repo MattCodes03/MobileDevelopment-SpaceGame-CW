@@ -2,6 +2,7 @@ package com.example.spacegame.entities;
 
 import android.content.Context;
 import android.graphics.RectF;
+import android.util.Log;
 
 import com.example.spacegame.SpaceGameView;
 
@@ -62,14 +63,33 @@ public class Projectile {
         {
             checkForCollisionWithEnemy();
         }
-
+        this.checkForCollisionWithScreen();
         this.rect.left = x;
         this.rect.right = x + length;
         this.rect.top = y;
         this.rect.bottom = y + height;
     }
-    private void checkForCollisionWithEnemy()
+    public void checkForCollisionWithEnemy()
     {
+    }
+
+    public void checkForCollisionWithScreen()
+    {
+        Log.d("X",""+this.getX());
+        if (this.getX() > 1000) {
+            Log.d("Test","1");
+            this.setInactive();
+            Log.d("INACTIVE","2");
+        }
+        if (this.getX() < 0) {
+            this.setInactive();
+        }
+        if (this.getY() > SpaceGameView.screenY - this.getLength()) {
+            this.setInactive();
+        }
+        if (this.getY() < 0 + this.getLength()) {
+            this.setInactive();
+        }
     }
 
     public void checkForCollisionWithPlayer()
@@ -120,5 +140,15 @@ public class Projectile {
     public float getY()
     {
         return this.y;
+    }
+
+    public float getLength()
+    {
+        return this.length;
+    }
+
+    public float getHeight()
+    {
+        return this.height;
     }
 }

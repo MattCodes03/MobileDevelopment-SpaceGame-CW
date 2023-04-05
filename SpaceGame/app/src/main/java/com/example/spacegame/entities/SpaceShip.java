@@ -155,4 +155,6 @@ public class SpaceShip {
         this.health -= damage;
     }
     public void setHealth(float health){this.health = health;}
+
+    public movingState getMovingState(){return this.spaceShipMoving;}
 }

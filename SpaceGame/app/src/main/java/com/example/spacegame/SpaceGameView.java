@@ -30,8 +30,8 @@ public class SpaceGameView extends SurfaceView implements Runnable{
     private long fps;
 
     private long timeThisFrame;
-    private int screenX;
-    private int screenY;
+    public static int screenX;
+    public static int screenY;
 
     private int score = 0;
 
@@ -233,11 +233,7 @@ public class SpaceGameView extends SurfaceView implements Runnable{
                 spaceShip.setMovingState(SpaceShip.movingState.STOPPED);
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
-                if(!bullet.getStatus())
-                {
-                    bullet.setActive();
-                    //Log.d("Calling pew","call");
-                }
+                bullet.fireBullet(fps, spaceShip.getMovingState());
                 break;
             default:
                 break;
