@@ -24,6 +24,7 @@ public class Projectile {
     public enum ProjectileType
     {
         Bomb,
+        Heal,
         Bullet
     }
 
@@ -49,7 +50,7 @@ public class Projectile {
 
     public void update(long fps)
     {
-        if(this.type == ProjectileType.Bomb)
+        if(this.type == ProjectileType.Bomb || this.type == ProjectileType.Heal)
         {
             checkForCollisionWithPlayer();
         }else if(this.type == ProjectileType.Bullet)
@@ -73,13 +74,21 @@ public class Projectile {
 
         if(this.rect.intersect(player.getRect()) && this.isActive)
         {
+            if(this.type == ProjectileType.Heal)
+            {
+                this.isActive = false;
+                player.setHealth(110);
+
+                SpaceGameView.updateHealsConsumedCount();
+
+            }else {
                 this.isActive = false;
                 player.takeDamage(this.damage);
 
-                if(this.type == ProjectileType.Bomb)
-                {
+                if (this.type == ProjectileType.Bomb) {
                     SpaceGameView.updateBombsDetonatedCount();
                 }
+            }
         }
     }
 

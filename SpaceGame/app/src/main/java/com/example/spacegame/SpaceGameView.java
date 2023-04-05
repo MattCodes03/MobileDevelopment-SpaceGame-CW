@@ -100,7 +100,7 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             int healX = (int) ((Math.random() * (screenX)));
             int healY = (int) ((Math.random() * (screenY)));
 
-            healables[i] = new Healable(context, healX, healY);
+            healables[i] = new Healable(context, healX, healY, 0, Projectile.ProjectileType.Heal);
             healables[i].setActive();
         }
 
