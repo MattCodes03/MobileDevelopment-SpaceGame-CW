@@ -27,8 +27,8 @@ public class Bullet extends Projectile{
     public Bullet(Context context, float x, float y, float damage, ProjectileType type) {
         super(context, x, y, damage, type);
 
-        this.x = x;
-        this.y = y;
+        this.x = player.getX();
+        this.y = player.getY();
 
         this.bulletSpeed = 400f;
         this.hasBeenFired = false;
@@ -38,6 +38,9 @@ public class Bullet extends Projectile{
 
     public void update(long fps)
     {
+        this.x = player.getX();
+        this.y = player.getY();
+
         if(getStatus())
         {
             fireBullet(fps);

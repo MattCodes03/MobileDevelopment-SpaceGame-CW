@@ -176,17 +176,17 @@ public class SpaceGameView extends SurfaceView implements Runnable{
 
     private void checkForCollision() {
         if (spaceShip.getX() > screenX - spaceShip.getLength()) {
-            spaceShip.setMovingState(SpaceShip.movingState.STOPPED);
+            spaceShip.setX(screenX - spaceShip.getLength());
         }
         if (spaceShip.getX() < 0 + spaceShip.getLength()) {
-            spaceShip.setMovingState(SpaceShip.movingState.STOPPED);
+            spaceShip.setX(0 + spaceShip.getLength());
         }
 
         if (spaceShip.getY() > screenY - spaceShip.getLength()) {
-            spaceShip.setMovingState(SpaceShip.movingState.STOPPED);
+            spaceShip.setY(screenY - spaceShip.getLength());
         }
         if (spaceShip.getY() < 0 + spaceShip.getLength()) {
-            spaceShip.setMovingState(SpaceShip.movingState.STOPPED);
+            spaceShip.setY(0 + spaceShip.getLength());
         }
     }
 
