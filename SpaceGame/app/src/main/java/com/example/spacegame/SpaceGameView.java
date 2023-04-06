@@ -155,7 +155,6 @@ public class SpaceGameView extends SurfaceView implements Runnable{
     private void update()
     {
         spaceShip.update(fps);
-        checkForCollision();
 
         // Check to see if player health is over 100, this will be true once a healable item has been consumed
         if(spaceShip.getHealth() > 100)
@@ -195,22 +194,6 @@ public class SpaceGameView extends SurfaceView implements Runnable{
         if(bullet.getStatus())
         {
             bullet.update(fps);
-        }
-    }
-
-    private void checkForCollision() {
-        if (spaceShip.getX() > screenX - spaceShip.getLength()) {
-            spaceShip.setX(screenX - spaceShip.getLength());
-        }
-        if (spaceShip.getX() < 0 + spaceShip.getLength()) {
-            spaceShip.setX(0 + spaceShip.getLength());
-        }
-
-        if (spaceShip.getY() > screenY - spaceShip.getHeight()) {
-            spaceShip.setY(screenY - spaceShip.getHeight());
-        }
-        if (spaceShip.getY() < 0 + spaceShip.getHeight()) {
-            spaceShip.setY(0 + spaceShip.getHeight());
         }
     }
 
