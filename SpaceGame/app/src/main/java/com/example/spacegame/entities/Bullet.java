@@ -45,7 +45,7 @@ public class Bullet extends Projectile{
         this.x = player.getX();
         this.y = player.getY();
 
-        checkForCollisionWithScreenEdges();
+        this.checkForCollisionWithScreenEdges();
 
        if(getStatus())
        {
@@ -69,6 +69,7 @@ public class Bullet extends Projectile{
        super.update(fps);
     }
 
+    @Override
     public void checkForCollisionWithScreenEdges()
     {
             if (this.shooting_x > screenX - this.getLength()) {
