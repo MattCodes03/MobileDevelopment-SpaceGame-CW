@@ -50,22 +50,6 @@ public class Bullet extends Projectile{
 
        if(getStatus())
        {
-//           switch(bulletHeading){
-//               case LEFT:
-//                   this.shooting_x = this.shooting_x - this.bulletSpeed / fps;
-//                   break;
-//               case RIGHT:
-//                   this.shooting_x = this.shooting_x + this.bulletSpeed / fps;
-//                   break;
-//               case UP:
-//                   this.shooting_y = this.shooting_y - this.bulletSpeed / fps;
-//                   break;
-//               case DOWN:
-//                   this.shooting_y = this.shooting_y + this.bulletSpeed / fps;
-//                   break;
-//               default:
-//                   break;
-//           }
            double angleDirection = bulletHeading;
            double co=(angleDirection%90)/90;
 
@@ -82,7 +66,7 @@ public class Bullet extends Projectile{
            }
            else if (angleDirection>=90 && angleDirection<180){
 //               shooting_x= (float) ((1-co)*bulletSpeed);
-//               shooting_y= (float) (co*bulletSpeed);
+//             shooting_y= (float) (co*bulletSpeed);
 
                this.shooting_x = this.shooting_x - this.bulletSpeed / fps;
 
@@ -92,8 +76,8 @@ public class Bullet extends Projectile{
                this.rect.bottom+=shooting_y;
            }
            else if (angleDirection>=180 && angleDirection<270){
-//               shooting_x= (float) ((1-co)*bulletSpeed);
-//               shooting_y= (float) (co*bulletSpeed);
+//             shooting_x= (float) ((1-co)*bulletSpeed);
+//             shooting_y= (float) (co*bulletSpeed);
 
                this.shooting_y = this.shooting_y - this.bulletSpeed / fps;
 

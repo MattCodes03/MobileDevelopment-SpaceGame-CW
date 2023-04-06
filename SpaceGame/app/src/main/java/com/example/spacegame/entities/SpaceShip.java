@@ -18,52 +18,22 @@ public class SpaceShip extends AngleMovingObject {
     float height;
     float length;
 
-//    float x;
-//    float y;
-//
-//    int screenX;
-//    int screenY;
-
     float shipSpeed;
 
     float health;
 
-//    Bitmap bitmapUp;
-//    Bitmap bitmapLeft;
-//    Bitmap bitmapRight;
-//    Bitmap bitmapDown;
-//    Bitmap currentBitmap;
-//    Bitmap scaledBitmap;
-
-//
-//    public enum movingState
-//    {
-//        STOPPED,
-//        LEFT,
-//        RIGHT,
-//        UP,
-//        DOWN
-//    }
-
-//    movingState spaceShipMoving;
     boolean movingState=false;
     double directionAngle=0;
 
     public SpaceShip(Context context, SpaceGameView spaceGameView, int screenX, int screenY) {
         super(context,spaceGameView, screenX, screenY);
 
-//        this.rect = new RectF();
-//        this.length = screenX / 10f;
-//        this.height = screenY / 10f;
-//        this.x = screenX / 2f;
-//        this.y = screenY / 2f;
-
         this.health = 100f;
         this.shipSpeed = 350;
 
-        Bitmap scaledBitmap=BitmapFactory.decodeResource(context.getResources(), R.drawable.spaceshipright);
-        this.length=scaledBitmap.getWidth()*0.8f;
-        this.height=scaledBitmap.getHeight()*0.8f;
+        Bitmap scaledBitmap=BitmapFactory.decodeResource(context.getResources(), R.drawable.playerbitmap);
+        this.length=screenX/3f;
+        this.height=screenX/3f;
         scaledBitmap = Bitmap.createScaledBitmap(scaledBitmap, (int)this.length, (int)this.height, false); //cross the left screen limit
 //        this.bitmapRight = BitmapFactory.decodeResource(context.getResources(), R.drawable.spaceshipright);
 //        this.bitmapRight = Bitmap.createScaledBitmap(bitmapRight, (int) (length), (int) (height),false);
