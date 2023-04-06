@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 
 import com.example.spacegame.entities.Bomb;
 import com.example.spacegame.entities.Bullet;
+import com.example.spacegame.entities.Enemy;
 import com.example.spacegame.entities.Healable;
 import com.example.spacegame.entities.Projectile;
 import com.example.spacegame.entities.SpaceShip;
@@ -51,15 +53,15 @@ public class SpaceGameView extends SurfaceView implements Runnable{
     private int currentWave = 1;
     private int waveEnemies;
 
+    // holds current active enemies object on screen
+    private Enemy[] currentEnemies={null,null,null};
+
 
     public SpaceGameView(Context context, int x, int y) {
-
         super(context);
-        this.context = context;
-
-
-
+        this.context=context;
         ourHolder = getHolder();
+
         paint = new Paint();
         screenX = x;
         screenY = y;
@@ -77,6 +79,10 @@ public class SpaceGameView extends SurfaceView implements Runnable{
         healsConsumed++;
     }
 
+    public boolean checkIsOnFreeSurface(RectF rect) {
+        // TODO: return true if the rect is in free of the other objects area on screen and is surrounded by some additional free area
+        return true;
+    }
 
     private void initLevel()
     {
@@ -85,8 +91,6 @@ public class SpaceGameView extends SurfaceView implements Runnable{
 
         bombs = new Bomb[3];
         healables = new Healable[3];
-
-        waveEnemies = 3;
 
         for(int i = 0; i < 3; i++)
         {
@@ -106,8 +110,20 @@ public class SpaceGameView extends SurfaceView implements Runnable{
 
         Toast wavePopUp = Toast.makeText(context, "Wave: "+Integer.toString(this.currentWave), Toast.LENGTH_SHORT);
         wavePopUp.show();
+
+        generateNewEnemiesWave();
     }
 
+    private void generateNewEnemiesWave(){
+        this.waveEnemies=3;
+        this.currentWave+=1;
+        for(int i=0; i<3; i++){
+            this.currentEnemies[i]=new Enemy(context,this,this.screenX,this.screenY);
+        }
+        for(Enemy enemy:currentEnemies){
+            enemy.setStatus(true);
+        }
+    }
     public static SpaceShip getPlayer()
     {
         return spaceShip;
@@ -129,6 +145,10 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             }
 
         }
+    }
+
+    public long getFps() {
+        return fps;
     }
 
     private void update()
@@ -157,6 +177,9 @@ public class SpaceGameView extends SurfaceView implements Runnable{
         if(this.currentWave == 8 && this.waveEnemies <= 0)
         {
             endGame("Victory");
+        }
+        else if (this.waveEnemies==0){
+            generateNewEnemiesWave();
         }
 
         for (Bomb bomb : bombs) {
@@ -292,6 +315,14 @@ public class SpaceGameView extends SurfaceView implements Runnable{
 
             }
 
+            // draw enemies
+            for(Enemy enemy: currentEnemies )
+            {
+                if (enemy!=null && enemy.getStatus())
+                {
+                    canvas.drawBitmap(enemy.getBitmap(),enemy.getRect().left,enemy.getRect().top,this.paint);
+                }
+            }
 
             paint.setColor(Color.argb(255,  240, 219, 31));
             paint.setTextSize(40);
