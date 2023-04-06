@@ -226,11 +226,13 @@ public class SpaceGameView extends SurfaceView implements Runnable{
     }
 
     public double getAngle(PointF p1, PointF p2) {
-        final double deltaY = (p1.y - p2.y);
+        final double deltaY = (p2.y - p1.y);
         final double deltaX = (p2.x - p1.x);
-        final double result = Math.toDegrees(Math.atan2(deltaY, deltaX));
 
-        return (result < 0) ? (360d + result) : result;
+        double result = Math.atan2(deltaY, deltaX) * 180 / Math.PI;
+        result = spaceShip.checkAngle(result+180);
+
+        return result;
     }
 
     @Override
@@ -246,8 +248,7 @@ public class SpaceGameView extends SurfaceView implements Runnable{
                 playerPoint.x = spaceShip.getRect().left;
                 playerPoint.y = spaceShip.getRect().top;
 
-                double newDirectionAngle = getAngle(touchPoint, playerPoint) + 180;
-                newDirectionAngle = spaceShip.checkAngle(newDirectionAngle);
+                double newDirectionAngle = getAngle(touchPoint, playerPoint);
                 spaceShip.setDirectionAngle(newDirectionAngle);
                 spaceShip.setStatus(true);
                 spaceShip.checkCollisions();
