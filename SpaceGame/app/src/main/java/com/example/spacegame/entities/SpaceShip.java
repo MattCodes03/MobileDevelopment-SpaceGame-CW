@@ -10,147 +10,168 @@ import android.view.SurfaceHolder;
 import android.widget.Space;
 
 import com.example.spacegame.R;
+import com.example.spacegame.SpaceGameView;
 
-public class SpaceShip {
-    RectF rect;
+public class SpaceShip extends AngleMovingObject {
+//    RectF rect;
 
     float height;
     float length;
 
-    float x;
-    float y;
-
-    int screenX;
-    int screenY;
+//    float x;
+//    float y;
+//
+//    int screenX;
+//    int screenY;
 
     float shipSpeed;
 
     float health;
 
-    Bitmap bitmapUp;
-    Bitmap bitmapLeft;
-    Bitmap bitmapRight;
-    Bitmap bitmapDown;
-    Bitmap currentBitmap;
+//    Bitmap bitmapUp;
+//    Bitmap bitmapLeft;
+//    Bitmap bitmapRight;
+//    Bitmap bitmapDown;
+//    Bitmap currentBitmap;
+//    Bitmap scaledBitmap;
 
+//
+//    public enum movingState
+//    {
+//        STOPPED,
+//        LEFT,
+//        RIGHT,
+//        UP,
+//        DOWN
+//    }
 
+//    movingState spaceShipMoving;
+    boolean movingState=false;
+    double directionAngle=0;
 
-    public enum movingState
-    {
-        STOPPED,
-        LEFT,
-        RIGHT,
-        UP,
-        DOWN
-    }
+    public SpaceShip(Context context, SpaceGameView spaceGameView, int screenX, int screenY) {
+        super(context,spaceGameView, screenX, screenY);
 
-    movingState spaceShipMoving;
-
-    public SpaceShip(Context context, int screenX, int screenY) {
-        this.rect = new RectF();
-
-        this.length = screenX / 10f;
-        this.height = screenY / 10f;
-
-        this.x = screenX / 2f;
-        this.y = screenY / 2f;
+//        this.rect = new RectF();
+//        this.length = screenX / 10f;
+//        this.height = screenY / 10f;
+//        this.x = screenX / 2f;
+//        this.y = screenY / 2f;
 
         this.health = 100f;
-
         this.shipSpeed = 350;
 
-        this.bitmapRight = BitmapFactory.decodeResource(context.getResources(), R.drawable.spaceshipright);
-        this.bitmapRight = Bitmap.createScaledBitmap(bitmapRight, (int) (length), (int) (height),false);
+        Bitmap scaledBitmap=BitmapFactory.decodeResource(context.getResources(), R.drawable.spaceshipright);
+        this.length=scaledBitmap.getWidth()*0.8f;
+        this.height=scaledBitmap.getHeight()*0.8f;
+        scaledBitmap = Bitmap.createScaledBitmap(scaledBitmap, (int)this.length, (int)this.height, false); //cross the left screen limit
+//        this.bitmapRight = BitmapFactory.decodeResource(context.getResources(), R.drawable.spaceshipright);
+//        this.bitmapRight = Bitmap.createScaledBitmap(bitmapRight, (int) (length), (int) (height),false);
+//
+//        this.bitmapLeft = BitmapFactory.decodeResource(context.getResources(), R.drawable.spaceshipleft);
+//        this.bitmapLeft = Bitmap.createScaledBitmap(bitmapLeft, (int) (length), (int) (height),false);
+//
+//        this.bitmapDown = BitmapFactory.decodeResource(context.getResources(), R.drawable.spaceshipdown);
+//        this.bitmapDown = Bitmap.createScaledBitmap(bitmapDown, (int) (length), (int) (height),false);
+//
+//        this.bitmapUp = BitmapFactory.decodeResource(context.getResources(), R.drawable.spaceshipup);
+//        this.bitmapUp = Bitmap.createScaledBitmap(bitmapUp, (int) (length), (int) (height),false);
 
-        this.bitmapLeft = BitmapFactory.decodeResource(context.getResources(), R.drawable.spaceshipleft);
-        this.bitmapLeft = Bitmap.createScaledBitmap(bitmapLeft, (int) (length), (int) (height),false);
+//        this.currentBitmap = this.bitmapRight;
 
-        this.bitmapDown = BitmapFactory.decodeResource(context.getResources(), R.drawable.spaceshipdown);
-        this.bitmapDown = Bitmap.createScaledBitmap(bitmapDown, (int) (length), (int) (height),false);
+//        this.screenX = screenX;
+//        this.screenY = screenY;
 
-        this.bitmapUp = BitmapFactory.decodeResource(context.getResources(), R.drawable.spaceshipup);
-        this.bitmapUp = Bitmap.createScaledBitmap(bitmapUp, (int) (length), (int) (height),false);
-
-        this.currentBitmap = this.bitmapRight;
-
-        this.screenX = screenX;
-        this.screenY = screenY;
-
-        this.spaceShipMoving = movingState.STOPPED;
-
+//        this.spaceShipMoving = movingState.STOPPED;
+        this.movingState=false;
+        initialise(scaledBitmap);
+        this.start();
     }
 
-    public void setMovingState(movingState state)
+//    public void setMovingState(movingState state)
+//    {
+//        this.spaceShipMoving = state;
+//    }
+    public void setMovingState(boolean shouldMove)
     {
-        this.spaceShipMoving = state;
+//        this.spaceShipMoving = state;
+        this.movingState=shouldMove;
     }
 
     public void update(long fps)
     {
-        switch (this.spaceShipMoving)
-        {
-            case LEFT:
-                this.x = this.x - this.shipSpeed / fps;
-                this.currentBitmap = this.bitmapLeft;
-                break;
-            case RIGHT:
-                this.x = this.x + this.shipSpeed / fps;
-                this.currentBitmap = this.bitmapRight;
-                break;
-            case UP:
-                this.y = this.y - this.shipSpeed / fps;
-                this.currentBitmap = this.bitmapUp;
-                break;
-            case DOWN:
-                this.y = this.y + this.shipSpeed / fps;
-                this.currentBitmap = this.bitmapDown;
-                break;
-            default:
-                this.currentBitmap = this.bitmapRight;
-                break;
-        }
+//        switch (this.movingState) // spaceShipMoving)
+//        {
+//            case LEFT:
+//                this.x = this.x - this.shipSpeed / fps;
+//                this.currentBitmap = this.bitmapLeft;
+//                break;
+//            case RIGHT:
+//                this.x = this.x + this.shipSpeed / fps;
+//                this.currentBitmap = this.bitmapRight;
+//                break;
+//            case UP:
+//                this.y = this.y - this.shipSpeed / fps;
+//                this.currentBitmap = this.bitmapUp;
+//                break;
+//            case DOWN:
+//                this.y = this.y + this.shipSpeed / fps;
+//                this.currentBitmap = this.bitmapDown;
+//                break;
+//            default:
+//                this.currentBitmap = this.bitmapRight;
+//                break;
+//        }
 
-        this.rect.top = this.y;
-        this.rect.bottom = this.y + this.height;
-        this.rect.left = this.x;
-        this.rect.right = this.x + this.length;
+//        this.rect.top = this.y;
+//        this.rect.bottom = this.y + this.height;
+//        this.rect.left = this.x;
+//        this.rect.right = this.x + this.length;
 
 
     }
 
-    public RectF getRect(){
-        return this.rect;
-    }
+//    public RectF getRect(){
+//        return this.rect;
+//    }
 
-    public Bitmap getBitmap(){
-        return this.currentBitmap;
-    }
+//    public Bitmap getBitmap(){
+//        return this.bitmap;
+//    }
 
+//    public float getX(){
+//        return this.x;
+//    }
     public float getX(){
-        return this.x;
+        return this.rect.left;
     }
 
+//    public float getY() {
+//        return this.y;
+//    }
     public float getY() {
-        return this.y;
+        return this.rect.top;
     }
 
     public void setX(float x)
     {
-        this.x = x;
+        this.setRectangle(x,this.getY());
+//        this.x = x;
     }
 
     public void setY(float y)
     {
-        this.y = y;
+        this.setRectangle(this.getX(),y);
+//        this.y = y;
     }
 
     public float getLength(){
-        return this.length;
+        return this.rect.width(); //length;
     }
 
     public float getHeight()
     {
-        return this.height;
+        return this.rect.height(); //height;
     }
 
     public float getHealth()
@@ -163,5 +184,5 @@ public class SpaceShip {
     }
     public void setHealth(float health){this.health = health;}
 
-    public movingState getMovingState(){return this.spaceShipMoving;}
+//    public movingState getMovingState(){return this.spaceShipMoving;}
 }

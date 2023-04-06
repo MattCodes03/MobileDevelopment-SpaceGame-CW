@@ -86,7 +86,7 @@ public class SpaceGameView extends SurfaceView implements Runnable{
 
     private void initLevel()
     {
-        spaceShip = new SpaceShip(context, screenX, screenY);
+        spaceShip = new SpaceShip(context, this, screenX, screenY);
         bullet = new Bullet(context, spaceShip.getX(), spaceShip.getY(), 50, Projectile.ProjectileType.Bullet);
 
         bombs = new Bomb[3];
@@ -229,34 +229,41 @@ public class SpaceGameView extends SurfaceView implements Runnable{
         switch(motionEvent.getAction() & MotionEvent.ACTION_MASK)
         {
             case MotionEvent.ACTION_DOWN:
-                if(motionEvent.getY() > this.screenY - this.screenY / 2f)
-                {
-                    if(motionEvent.getX() > this.screenX / 2f)
-                    {
-                        spaceShip.setMovingState(SpaceShip.movingState.RIGHT);
-                    }else
-                    {
-                        spaceShip.setMovingState(SpaceShip.movingState.LEFT);
+                double newDirectionAngle=spaceShip.getDirectionAngle();
+                spaceShip.setStatus(true);
+                RectF rect=spaceShip.generateMovement(newDirectionAngle,spaceShip.getRect(),spaceShip.getStepHorizontal(),spaceShip.getStepVertical());
+                spaceShip.setRectangle(rect.left,rect.top);
+                spaceShip.checkCollisions();
 
-                    }
-                }
-
-                if(motionEvent.getY() < this.screenY - this.screenY / 2f)
-                {
-                    if(motionEvent.getX() < this.screenX / 2f)
-                    {
-                        spaceShip.setMovingState(SpaceShip.movingState.UP);
-                    }else {
-                        spaceShip.setMovingState(SpaceShip.movingState.DOWN);
-                    }
-                }
+//                if(motionEvent.getY() > this.screenY - this.screenY / 2f)
+//                {
+//                    if(motionEvent.getX() > this.screenX / 2f)
+//                    {
+//                        spaceShip.setMovingState(SpaceShip.movingState.RIGHT);
+//                    }else
+//                    {
+//                        spaceShip.setMovingState(SpaceShip.movingState.LEFT);
+//
+//                    }
+//                }
+//
+//                if(motionEvent.getY() < this.screenY - this.screenY / 2f)
+//                {
+//                    if(motionEvent.getX() < this.screenX / 2f)
+//                    {
+//                        spaceShip.setMovingState(SpaceShip.movingState.UP);
+//                    }else {
+//                        spaceShip.setMovingState(SpaceShip.movingState.DOWN);
+//                    }
+//                }
                 break;
             case MotionEvent.ACTION_UP:
-                spaceShip.setMovingState(SpaceShip.movingState.STOPPED);
+//                spaceShip.setMovingState(SpaceShip.movingState.STOPPED);
+                spaceShip.setStatus(false);
                 break;
-            case MotionEvent.ACTION_POINTER_DOWN:
-                bullet.fireBullet(fps, spaceShip.getMovingState());
-                break;
+//            case MotionEvent.ACTION_POINTER_DOWN:
+//                bullet.fireBullet(fps, spaceShip.getMovingState());
+//                break;
             default:
                 break;
         }

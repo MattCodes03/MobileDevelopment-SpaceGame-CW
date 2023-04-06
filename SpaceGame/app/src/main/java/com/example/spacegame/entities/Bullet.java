@@ -24,7 +24,7 @@ public class Bullet extends Projectile{
 
     boolean hasBeenFired;
 
-    SpaceShip.movingState bulletHeading;
+//    SpaceShip.movingState bulletHeading;
 
     float bulletSpeed;
 
@@ -49,22 +49,22 @@ public class Bullet extends Projectile{
 
        if(getStatus())
        {
-           switch(bulletHeading){
-               case LEFT:
-                   this.shooting_x = this.shooting_x - this.bulletSpeed / fps;
-                   break;
-               case RIGHT:
-                   this.shooting_x = this.shooting_x + this.bulletSpeed / fps;
-                   break;
-               case UP:
-                   this.shooting_y = this.shooting_y - this.bulletSpeed / fps;
-                   break;
-               case DOWN:
-                   this.shooting_y = this.shooting_y + this.bulletSpeed / fps;
-                   break;
-               default:
-                   break;
-           }
+//           switch(bulletHeading){
+//               case LEFT:
+//                   this.shooting_x = this.shooting_x - this.bulletSpeed / fps;
+//                   break;
+//               case RIGHT:
+//                   this.shooting_x = this.shooting_x + this.bulletSpeed / fps;
+//                   break;
+//               case UP:
+//                   this.shooting_y = this.shooting_y - this.bulletSpeed / fps;
+//                   break;
+//               case DOWN:
+//                   this.shooting_y = this.shooting_y + this.bulletSpeed / fps;
+//                   break;
+//               default:
+//                   break;
+//           }
        }
        super.update(fps);
     }
@@ -87,10 +87,10 @@ public class Bullet extends Projectile{
             }
     }
 
-    public void fireBullet(long fps, SpaceShip.movingState direction) {
+    public void fireBullet(long fps, double angleDirection) { //SpaceShip.movingState direction
         if(!this.getStatus()) {
             this.setActive();
-            this.bulletHeading = direction;
+//            this.bulletHeading = direction;
 
             shooting_x = player.getX();
             shooting_y = player.getY();
