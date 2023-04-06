@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PointF;
 import android.graphics.RectF;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -224,43 +225,35 @@ public class SpaceGameView extends SurfaceView implements Runnable{
         this.pause();
     }
 
+    public double getAngle(PointF p1, PointF p2) {
+        final double deltaY = (p1.y - p2.y);
+        final double deltaX = (p2.x - p1.x);
+        final double result = Math.toDegrees(Math.atan2(deltaY, deltaX));
+
+        return (result < 0) ? (360d + result) : result;
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
         switch(motionEvent.getAction() & MotionEvent.ACTION_MASK)
         {
             case MotionEvent.ACTION_DOWN:
-                double newDirectionAngle = Math.atan2((motionEvent.getY() - screenY/2f), (motionEvent.getX()) - screenX/2f);
-                newDirectionAngle = spaceShip.checkAngle(newDirectionAngle+180);
+                PointF touchPoint = new PointF();
+                touchPoint.x = motionEvent.getX();
+                touchPoint.y = motionEvent.getY();
 
-                spaceShip.checkCollisions();
+                PointF playerPoint = new PointF();
+                playerPoint.x = spaceShip.getRect().left;
+                playerPoint.y = spaceShip.getRect().top;
 
+                double newDirectionAngle = getAngle(touchPoint, playerPoint) + 180;
+                newDirectionAngle = spaceShip.checkAngle(newDirectionAngle);
                 spaceShip.setDirectionAngle(newDirectionAngle);
                 spaceShip.setStatus(true);
-                //RectF rect=spaceShip.generateMovement(newDirectionAngle,spaceShip.getRect(),spaceShip.getStepHorizontal(),spaceShip.getStepVertical());
+                spaceShip.checkCollisions();
 
+                Log.d("Angle", ""+newDirectionAngle);
 
-
-//                if(motionEvent.getY() > this.screenY - this.screenY / 2f)
-//                {
-//                    if(motionEvent.getX() > this.screenX / 2f)
-//                    {
-//                        spaceShip.setMovingState(SpaceShip.movingState.RIGHT);
-//                    }else
-//                    {
-//                        spaceShip.setMovingState(SpaceShip.movingState.LEFT);
-//
-//                    }
-//                }
-//
-//                if(motionEvent.getY() < this.screenY - this.screenY / 2f)
-//                {
-//                    if(motionEvent.getX() < this.screenX / 2f)
-//                    {
-//                        spaceShip.setMovingState(SpaceShip.movingState.UP);
-//                    }else {
-//                        spaceShip.setMovingState(SpaceShip.movingState.DOWN);
-//                    }
-//                }
                 break;
             case MotionEvent.ACTION_UP:
 //                spaceShip.setMovingState(SpaceShip.movingState.STOPPED);

@@ -82,6 +82,8 @@ public class AngleMovingObject extends Thread {
         destinationRect.bottom=currentRect.bottom;
         destinationRect.right=currentRect.right;
 
+        this.checkDirectionAngle();
+
         double co=(angleDirection%90)/90;
         if (angleDirection>=0 && angleDirection<90){
             double xmove=(1-co)*stepHorizontal;
@@ -178,9 +180,9 @@ public class AngleMovingObject extends Thread {
 
     public void setStatus(boolean activate) {
         this.status=activate;
-        if (!this.status){
-            this.interrupt();
-        }
+//        if (!this.status){
+//            this.interrupt();
+//        }
     }
     public void run() {
         while(!interrupted()){ // if interrupted - end of the thread
