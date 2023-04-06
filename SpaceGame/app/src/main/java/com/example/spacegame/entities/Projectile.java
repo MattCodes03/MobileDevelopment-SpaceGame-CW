@@ -59,7 +59,6 @@ public class Projectile {
 
     public void update(long fps)
     {
-        checkForCollisionWithScreenEdges();
 
         if(this.type == ProjectileType.Bomb || this.type == ProjectileType.Heal)
         {
@@ -76,27 +75,6 @@ public class Projectile {
     }
     public void checkForCollisionWithEnemy()
     {
-    }
-
-    public void checkForCollisionWithScreenEdges()
-    {
-        if (this.getX() > screenX - this.getLength())
-        {
-            this.setInactive();
-        }
-        if (this.getX() < 0 + this.getLength())
-        {
-            this.setInactive();
-        }
-
-        if (this.getY() > screenY - this.getLength())
-        {
-            this.setInactive();
-        }
-        if (this.getY() < 0 + this.getLength())
-        {
-            this.setInactive();
-        }
     }
 
     public void checkForCollisionWithPlayer()

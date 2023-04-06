@@ -1,6 +1,8 @@
 package com.example.spacegame.entities;
 
 import static com.example.spacegame.SpaceGameView.getPlayer;
+import static com.example.spacegame.SpaceGameView.screenX;
+import static com.example.spacegame.SpaceGameView.screenY;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -43,6 +45,8 @@ public class Bullet extends Projectile{
         this.x = player.getX();
         this.y = player.getY();
 
+        checkForCollisionWithScreenEdges();
+
        if(getStatus())
        {
            switch(bulletHeading){
@@ -65,12 +69,31 @@ public class Bullet extends Projectile{
        super.update(fps);
     }
 
-    public void fireBullet(long fps, SpaceShip.movingState direction) {
-        this.setActive();
-        this.bulletHeading = direction;
+    public void checkForCollisionWithScreenEdges()
+    {
+            if (this.shooting_x > screenX - this.getLength()) {
+                this.setInactive();
+            }
+            if (this.shooting_x < 0 - this.getLength()) {
+                this.setInactive();
+            }
 
-        shooting_x = player.getX();
-        shooting_y = player.getY();
+            if (this.shooting_y > screenY - this.getHeight()) {
+                this.setInactive();
+            }
+            if (this.shooting_y < 0 + this.getHeight()) {
+                this.setInactive();
+            }
+    }
+
+    public void fireBullet(long fps, SpaceShip.movingState direction) {
+        if(!this.getStatus()) {
+            this.setActive();
+            this.bulletHeading = direction;
+
+            shooting_x = player.getX();
+            shooting_y = player.getY();
+        }
     }
 
     public Bitmap getBitmap() {

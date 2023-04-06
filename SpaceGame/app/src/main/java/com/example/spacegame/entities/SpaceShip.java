@@ -33,6 +33,8 @@ public class SpaceShip {
     Bitmap bitmapDown;
     Bitmap currentBitmap;
 
+
+
     public enum movingState
     {
         STOPPED,
@@ -144,6 +146,11 @@ public class SpaceShip {
 
     public float getLength(){
         return this.length;
+    }
+
+    public float getHeight()
+    {
+        return this.height;
     }
 
     public float getHealth()

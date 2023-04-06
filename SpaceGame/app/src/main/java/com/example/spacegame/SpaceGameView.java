@@ -182,11 +182,11 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             spaceShip.setX(0 + spaceShip.getLength());
         }
 
-        if (spaceShip.getY() > screenY - spaceShip.getLength()) {
-            spaceShip.setY(screenY - spaceShip.getLength());
+        if (spaceShip.getY() > screenY - spaceShip.getHeight()) {
+            spaceShip.setY(screenY - spaceShip.getHeight());
         }
-        if (spaceShip.getY() < 0 + spaceShip.getLength()) {
-            spaceShip.setY(0 + spaceShip.getLength());
+        if (spaceShip.getY() < 0 + spaceShip.getHeight()) {
+            spaceShip.setY(0 + spaceShip.getHeight());
         }
     }
 
