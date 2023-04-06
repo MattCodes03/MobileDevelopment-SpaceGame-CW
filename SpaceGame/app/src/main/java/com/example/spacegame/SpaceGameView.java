@@ -240,12 +240,11 @@ public class SpaceGameView extends SurfaceView implements Runnable{
 
                 break;
             case MotionEvent.ACTION_UP:
-//                spaceShip.setMovingState(SpaceShip.movingState.STOPPED);
                 spaceShip.setStatus(false);
                 break;
-//            case MotionEvent.ACTION_POINTER_DOWN:
-//                bullet.fireBullet(fps, spaceShip.getMovingState());
-//                break;
+            case MotionEvent.ACTION_POINTER_DOWN:
+                bullet.fireBullet(fps, spaceShip.getDirectionAngle());
+                break;
             default:
                 break;
         }
