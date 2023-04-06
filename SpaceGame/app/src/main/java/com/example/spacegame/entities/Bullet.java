@@ -33,7 +33,7 @@ public class Bullet extends Projectile{
         this.y = player.getY();
 
         this.bulletSpeed = 2000f;
-        this.hasBeenFired = false;
+
         shooting_x = player.getX();
         shooting_y = player.getY();
     }
@@ -58,6 +58,8 @@ public class Bullet extends Projectile{
                case DOWN:
                    this.shooting_y = this.shooting_y + this.bulletSpeed / fps;
                    break;
+               default:
+                   break;
            }
        }
        super.update(fps);
@@ -66,6 +68,9 @@ public class Bullet extends Projectile{
     public void fireBullet(long fps, SpaceShip.movingState direction) {
         this.setActive();
         this.bulletHeading = direction;
+
+        shooting_x = player.getX();
+        shooting_y = player.getY();
     }
 
     public Bitmap getBitmap() {

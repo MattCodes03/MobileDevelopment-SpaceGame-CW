@@ -1,5 +1,8 @@
 package com.example.spacegame.entities;
 
+import static com.example.spacegame.SpaceGameView.screenX;
+import static com.example.spacegame.SpaceGameView.screenY;
+
 import android.content.Context;
 import android.graphics.RectF;
 import android.util.Log;
@@ -56,6 +59,8 @@ public class Projectile {
 
     public void update(long fps)
     {
+        checkForCollisionWithScreenEdges();
+
         if(this.type == ProjectileType.Bomb || this.type == ProjectileType.Heal)
         {
             checkForCollisionWithPlayer();
@@ -63,7 +68,7 @@ public class Projectile {
         {
             checkForCollisionWithEnemy();
         }
-        this.checkForCollisionWithScreen();
+
         this.rect.left = x;
         this.rect.right = x + length;
         this.rect.top = y;
@@ -73,21 +78,23 @@ public class Projectile {
     {
     }
 
-    public void checkForCollisionWithScreen()
+    public void checkForCollisionWithScreenEdges()
     {
-        Log.d("X",""+this.getX());
-        if (this.getX() > 1000) {
-            Log.d("Test","1");
-            this.setInactive();
-            Log.d("INACTIVE","2");
-        }
-        if (this.getX() < 0) {
+        if (this.getX() > screenX - this.getLength())
+        {
             this.setInactive();
         }
-        if (this.getY() > SpaceGameView.screenY - this.getLength()) {
+        if (this.getX() < 0 + this.getLength())
+        {
             this.setInactive();
         }
-        if (this.getY() < 0 + this.getLength()) {
+
+        if (this.getY() > screenY - this.getLength())
+        {
+            this.setInactive();
+        }
+        if (this.getY() < 0 + this.getLength())
+        {
             this.setInactive();
         }
     }
