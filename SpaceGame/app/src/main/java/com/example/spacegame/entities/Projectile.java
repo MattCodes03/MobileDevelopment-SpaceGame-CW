@@ -1,18 +1,23 @@
 package com.example.spacegame.entities;
 
+import static com.example.spacegame.SpaceGameView.screenX;
+import static com.example.spacegame.SpaceGameView.screenY;
+
 import android.content.Context;
 import android.graphics.RectF;
+import android.util.Log;
 
 import com.example.spacegame.SpaceGameView;
 
 public class Projectile {
+    Context context;
     RectF rect;
 
     float height;
     float length;
 
-    int x;
-    int y;
+    float x;
+    float y;
     float damage;
 
     private boolean isActive;
@@ -21,16 +26,21 @@ public class Projectile {
 
     ProjectileType type;
 
+
+
     public enum ProjectileType
     {
         Bomb,
+        Heal,
         Bullet
     }
 
-    Projectile(Context context, int x, int y, float damage, ProjectileType type)
+    Projectile(Context context, float x, float y, float damage, ProjectileType type)
     {
 
         this.rect = new RectF();
+
+        this.context = context;
 
         this.x = x;
         this.y = y;
@@ -49,7 +59,9 @@ public class Projectile {
 
     public void update(long fps)
     {
-        if(this.type == ProjectileType.Bomb)
+        checkForCollisionWithScreenEdges();
+
+        if(this.type == ProjectileType.Bomb || this.type == ProjectileType.Heal)
         {
             checkForCollisionWithPlayer();
         }else if(this.type == ProjectileType.Bullet)
@@ -62,9 +74,25 @@ public class Projectile {
         this.rect.top = y;
         this.rect.bottom = y + height;
     }
-
-    private void checkForCollisionWithEnemy()
+    public void checkForCollisionWithEnemy()
     {
+    }
+
+    public void checkForCollisionWithScreenEdges()
+    {
+        if (this.getX() > screenX - this.getLength()) {
+            this.setInactive();
+        }
+        if (this.getX() < 0 - this.getLength()) {
+            this.setInactive();
+        }
+
+        if (this.getY() > screenY - this.getHeight()) {
+            this.setInactive();
+        }
+        if (this.getY() < 0 + this.getHeight()) {
+            this.setInactive();
+        }
     }
 
     public void checkForCollisionWithPlayer()
@@ -73,13 +101,21 @@ public class Projectile {
 
         if(this.rect.intersect(player.getRect()) && this.isActive)
         {
+            if(this.type == ProjectileType.Heal)
+            {
+                this.isActive = false;
+                player.setHealth(110);
+
+                SpaceGameView.updateHealsConsumedCount();
+
+            }else {
                 this.isActive = false;
                 player.takeDamage(this.damage);
 
-                if(this.type == ProjectileType.Bomb)
-                {
+                if (this.type == ProjectileType.Bomb) {
                     SpaceGameView.updateBombsDetonatedCount();
                 }
+            }
         }
     }
 
@@ -92,8 +128,30 @@ public class Projectile {
         this.isActive = true;
     }
 
+    public void setInactive(){ this.isActive = false;}
+
     public RectF getRect()
     {
         return this.rect;
+    }
+
+    public float getX()
+    {
+        return this.x;
+    }
+
+    public float getY()
+    {
+        return this.y;
+    }
+
+    public float getLength()
+    {
+        return this.length;
+    }
+
+    public float getHeight()
+    {
+        return this.height;
     }
 }

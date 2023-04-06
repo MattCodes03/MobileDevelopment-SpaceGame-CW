@@ -5,10 +5,10 @@ import android.content.Context;
 public class Bomb extends Projectile{
 
     float damage;
-    int x;
-    int y;
+    float x;
+    float y;
 
-    public Bomb(Context context, int x, int y, float damage, ProjectileType type) {
+    public Bomb(Context context, float x, float y, float damage, ProjectileType type) {
         super(context, x, y, damage, type);
 
         this.x = x;

@@ -32,8 +32,8 @@ public class SpaceGameView extends SurfaceView implements Runnable{
     private long fps;
 
     private long timeThisFrame;
-    private int screenX;
-    private int screenY;
+    public static int screenX;
+    public static int screenY;
 
     private int score = 0;
 
@@ -87,7 +87,7 @@ public class SpaceGameView extends SurfaceView implements Runnable{
     private void initLevel()
     {
         spaceShip = new SpaceShip(context, screenX, screenY);
-        bullet = new Bullet(context, screenX, screenY, 50, Projectile.ProjectileType.Bullet);
+        bullet = new Bullet(context, spaceShip.getX(), spaceShip.getY(), 50, Projectile.ProjectileType.Bullet);
 
         bombs = new Bomb[3];
         healables = new Healable[3];
@@ -104,7 +104,7 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             int healX = (int) ((Math.random() * (screenX)));
             int healY = (int) ((Math.random() * (screenY)));
 
-            healables[i] = new Healable(context, healX, healY);
+            healables[i] = new Healable(context, healX, healY, 0, Projectile.ProjectileType.Heal);
             healables[i].setActive();
         }
 
@@ -199,17 +199,17 @@ public class SpaceGameView extends SurfaceView implements Runnable{
 
     private void checkForCollision() {
         if (spaceShip.getX() > screenX - spaceShip.getLength()) {
-            spaceShip.setMovingState(SpaceShip.movingState.STOPPED);
+            spaceShip.setX(screenX - spaceShip.getLength());
         }
         if (spaceShip.getX() < 0 + spaceShip.getLength()) {
-            spaceShip.setMovingState(SpaceShip.movingState.STOPPED);
+            spaceShip.setX(0 + spaceShip.getLength());
         }
 
-        if (spaceShip.getY() > screenY - spaceShip.getLength()) {
-            spaceShip.setMovingState(SpaceShip.movingState.STOPPED);
+        if (spaceShip.getY() > screenY - spaceShip.getHeight()) {
+            spaceShip.setY(screenY - spaceShip.getHeight());
         }
-        if (spaceShip.getY() < 0 + spaceShip.getLength()) {
-            spaceShip.setMovingState(SpaceShip.movingState.STOPPED);
+        if (spaceShip.getY() < 0 + spaceShip.getHeight()) {
+            spaceShip.setY(0 + spaceShip.getHeight());
         }
     }
 
@@ -229,7 +229,6 @@ public class SpaceGameView extends SurfaceView implements Runnable{
         switch(motionEvent.getAction() & MotionEvent.ACTION_MASK)
         {
             case MotionEvent.ACTION_DOWN:
-                paused = false;
                 if(motionEvent.getY() > this.screenY - this.screenY / 2f)
                 {
                     if(motionEvent.getX() > this.screenX / 2f)
@@ -239,10 +238,6 @@ public class SpaceGameView extends SurfaceView implements Runnable{
                     {
                         spaceShip.setMovingState(SpaceShip.movingState.LEFT);
 
-                    }
-                    if(!bullet.getStatus())
-                    {
-                        bullet.setActive();
                     }
                 }
 
@@ -254,16 +249,13 @@ public class SpaceGameView extends SurfaceView implements Runnable{
                     }else {
                         spaceShip.setMovingState(SpaceShip.movingState.DOWN);
                     }
-                    if(!bullet.getStatus())
-                    {
-                        bullet.setActive();
-                    }
                 }
-
-
                 break;
             case MotionEvent.ACTION_UP:
                 spaceShip.setMovingState(SpaceShip.movingState.STOPPED);
+                break;
+            case MotionEvent.ACTION_POINTER_DOWN:
+                bullet.fireBullet(fps, spaceShip.getMovingState());
                 break;
             default:
                 break;
@@ -271,33 +263,29 @@ public class SpaceGameView extends SurfaceView implements Runnable{
         return true;
     }
 
-    private void draw(){
+    private void draw() {
+
 
         if (ourHolder.getSurface().isValid()) {
-
             canvas = ourHolder.lockCanvas();
             canvas.drawColor(Color.argb(255, 26, 128, 182));
-
             // Draw Background
             bitmapback = BitmapFactory.decodeResource(context.getResources(), R.drawable.background);
-            bitmapback = Bitmap.createScaledBitmap(bitmapback, (int) (screenX), (int) (screenY),false);
+            bitmapback = Bitmap.createScaledBitmap(bitmapback, (int) (screenX), (int) (screenY), false);
             canvas.drawBitmap(bitmapback, 0, 0, paint);
 
             // Draw Player
-            canvas.drawBitmap(spaceShip.getBitmap(), spaceShip.getX(), spaceShip.getY() , paint);
+            canvas.drawBitmap(spaceShip.getBitmap(), spaceShip.getX(), spaceShip.getY(), paint);
 
             // Draw Bullet
-            if(bullet.getStatus())
-            {
+            if (bullet.getStatus()) {
                 paint.setColor(Color.argb(255, 255, 255, 0));
-                canvas.drawRect(bullet.getRect(), paint);
+                canvas.drawBitmap(bullet.getBitmap(), bullet.getShootingX(), bullet.getShootingY(), paint);
             }
 
             // Draw Bombs
-            for(Bomb bomb : bombs)
-            {
-                if(bomb.getStatus())
-                {
+            for (Bomb bomb : bombs) {
+                if (bomb.getStatus()) {
                     paint.setColor(Color.argb(255, 255, 0, 0));
                     canvas.drawRect(bomb.getRect(), paint);
                 }
@@ -305,10 +293,8 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             }
 
             // Draw Healables
-            for(Healable healable : healables)
-            {
-                if(healable.getStatus())
-                {
+            for (Healable healable : healables) {
+                if (healable.getStatus()) {
                     paint.setColor(Color.argb(255, 0, 255, 0));
                     canvas.drawRect(healable.getRect(), paint);
                 }
@@ -324,15 +310,16 @@ public class SpaceGameView extends SurfaceView implements Runnable{
                 }
             }
 
-            paint.setColor(Color.argb(255,  240, 219, 31));
+            paint.setColor(Color.argb(255, 240, 219, 31));
             paint.setTextSize(40);
             canvas.drawText("Score: " + score + "   Lives: " +
-                    lives, 10,50, paint);
+                    lives, 10, 50, paint);
 
             ourHolder.unlockCanvasAndPost(canvas);
             paused = false;
         }
     }
+
 
     public void pause() {
         playing = false;

@@ -7,6 +7,7 @@ import android.graphics.RectF;
 import android.os.Debug;
 import android.util.Log;
 import android.view.SurfaceHolder;
+import android.widget.Space;
 
 import com.example.spacegame.R;
 
@@ -31,6 +32,8 @@ public class SpaceShip {
     Bitmap bitmapRight;
     Bitmap bitmapDown;
     Bitmap currentBitmap;
+
+
 
     public enum movingState
     {
@@ -111,6 +114,8 @@ public class SpaceShip {
         this.rect.bottom = this.y + this.height;
         this.rect.left = this.x;
         this.rect.right = this.x + this.length;
+
+
     }
 
     public RectF getRect(){
@@ -143,6 +148,11 @@ public class SpaceShip {
         return this.length;
     }
 
+    public float getHeight()
+    {
+        return this.height;
+    }
+
     public float getHealth()
     {
         return this.health;
@@ -151,8 +161,7 @@ public class SpaceShip {
     public void takeDamage(float damage){
         this.health -= damage;
     }
-    public void setHealth(float health)
-    {
-        this.health = health;
-    }
+    public void setHealth(float health){this.health = health;}
+
+    public movingState getMovingState(){return this.spaceShipMoving;}
 }
