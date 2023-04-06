@@ -3,6 +3,6 @@
     <item>
         <bitmap
             android:gravity="center"
-            android:src="@drawable/spaceshipup" />
+            android:src="@drawable/icon" />
     </item>
 </layer-list>
