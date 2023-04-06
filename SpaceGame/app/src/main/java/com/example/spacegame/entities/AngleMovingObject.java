@@ -154,7 +154,7 @@ public class AngleMovingObject extends Thread {
         matrix.postRotate((float)this.directionAngle);
         this.bitmap = Bitmap.createBitmap(this.scaledBitmap, 0, 0, this.scaledBitmap.getWidth(), this.scaledBitmap.getHeight(), matrix, true);
     }
-    private double checkAngle(double angle){
+    public double checkAngle(double angle){
         if (angle<0){
             angle+=360;
         }
@@ -206,5 +206,9 @@ public class AngleMovingObject extends Thread {
     }
     public double getStepVertical() {
         return this.stepVertical;
+    }
+
+    public void setDirectionAngle(double directionAngle) {
+        this.directionAngle = directionAngle;
     }
 }

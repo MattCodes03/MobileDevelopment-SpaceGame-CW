@@ -229,11 +229,16 @@ public class SpaceGameView extends SurfaceView implements Runnable{
         switch(motionEvent.getAction() & MotionEvent.ACTION_MASK)
         {
             case MotionEvent.ACTION_DOWN:
-                double newDirectionAngle=spaceShip.getDirectionAngle();
-                spaceShip.setStatus(true);
-                RectF rect=spaceShip.generateMovement(newDirectionAngle,spaceShip.getRect(),spaceShip.getStepHorizontal(),spaceShip.getStepVertical());
-                spaceShip.setRectangle(rect.left,rect.top);
+                double newDirectionAngle = Math.atan2((motionEvent.getY() - screenY/2f), (motionEvent.getX()) - screenX/2f);
+                newDirectionAngle = spaceShip.checkAngle(newDirectionAngle+180);
+
                 spaceShip.checkCollisions();
+
+                spaceShip.setDirectionAngle(newDirectionAngle);
+                spaceShip.setStatus(true);
+                //RectF rect=spaceShip.generateMovement(newDirectionAngle,spaceShip.getRect(),spaceShip.getStepHorizontal(),spaceShip.getStepVertical());
+
+
 
 //                if(motionEvent.getY() > this.screenY - this.screenY / 2f)
 //                {
