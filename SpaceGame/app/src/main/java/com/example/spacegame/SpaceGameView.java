@@ -206,7 +206,6 @@ public class SpaceGameView extends SurfaceView implements Runnable{
         switch(motionEvent.getAction() & MotionEvent.ACTION_MASK)
         {
             case MotionEvent.ACTION_DOWN:
-                paused = false;
                 if(motionEvent.getY() > this.screenY - this.screenY / 2f)
                 {
                     if(motionEvent.getX() > this.screenX / 2f)
@@ -241,33 +240,29 @@ public class SpaceGameView extends SurfaceView implements Runnable{
         return true;
     }
 
-    private void draw(){
+    private void draw() {
+
 
         if (ourHolder.getSurface().isValid()) {
-
             canvas = ourHolder.lockCanvas();
             canvas.drawColor(Color.argb(255, 26, 128, 182));
-
             // Draw Background
             bitmapback = BitmapFactory.decodeResource(context.getResources(), R.drawable.background);
-            bitmapback = Bitmap.createScaledBitmap(bitmapback, (int) (screenX), (int) (screenY),false);
+            bitmapback = Bitmap.createScaledBitmap(bitmapback, (int) (screenX), (int) (screenY), false);
             canvas.drawBitmap(bitmapback, 0, 0, paint);
 
             // Draw Player
-            canvas.drawBitmap(spaceShip.getBitmap(), spaceShip.getX(), spaceShip.getY() , paint);
+            canvas.drawBitmap(spaceShip.getBitmap(), spaceShip.getX(), spaceShip.getY(), paint);
 
             // Draw Bullet
-            if(bullet.getStatus())
-            {
+            if (bullet.getStatus()) {
                 paint.setColor(Color.argb(255, 255, 255, 0));
-                canvas.drawBitmap(bullet.getBitmap(), bullet.getShootingX(), bullet.getShootingY() , paint);
+                canvas.drawBitmap(bullet.getBitmap(), bullet.getShootingX(), bullet.getShootingY(), paint);
             }
 
             // Draw Bombs
-            for(Bomb bomb : bombs)
-            {
-                if(bomb.getStatus())
-                {
+            for (Bomb bomb : bombs) {
+                if (bomb.getStatus()) {
                     paint.setColor(Color.argb(255, 255, 0, 0));
                     canvas.drawRect(bomb.getRect(), paint);
                 }
@@ -275,10 +270,8 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             }
 
             // Draw Healables
-            for(Healable healable : healables)
-            {
-                if(healable.getStatus())
-                {
+            for (Healable healable : healables) {
+                if (healable.getStatus()) {
                     paint.setColor(Color.argb(255, 0, 255, 0));
                     canvas.drawRect(healable.getRect(), paint);
                 }
@@ -286,15 +279,16 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             }
 
 
-            paint.setColor(Color.argb(255,  240, 219, 31));
+            paint.setColor(Color.argb(255, 240, 219, 31));
             paint.setTextSize(40);
             canvas.drawText("Score: " + score + "   Lives: " +
-                    lives, 10,50, paint);
+                    lives, 10, 50, paint);
 
             ourHolder.unlockCanvasAndPost(canvas);
             paused = false;
         }
     }
+
 
     public void pause() {
         playing = false;
