@@ -5,7 +5,6 @@ import static com.example.spacegame.SpaceGameView.screenY;
 
 import android.content.Context;
 import android.graphics.RectF;
-import android.util.Log;
 
 import com.example.spacegame.SpaceGameView;
 
@@ -26,6 +25,9 @@ public class Projectile {
 
     ProjectileType type;
 
+    protected float getWidth() {
+        return this.length;
+    }
 
 
     public enum ProjectileType
@@ -76,6 +78,16 @@ public class Projectile {
     }
     public void checkForCollisionWithEnemy()
     {
+        Enemy[] enemies = SpaceGameView.getEnemies();
+
+        for(Enemy e: enemies)
+        {
+            if(this.rect.intersect(e.getCollisionRect()))
+            {
+                e.takeDamage(this.damage);
+                this.setInactive();
+            }
+        }
     }
 
     public void checkForCollisionWithScreenEdges()
@@ -99,7 +111,7 @@ public class Projectile {
     {
         /* Write function so that if the projectile this.rect collides with player Rect substitute this.damage from player health */
 
-        if(this.rect.intersect(player.getRect()) && this.isActive)
+        if(this.rect.intersect(player.getCollisionRect()) && this.isActive)
         {
             if(this.type == ProjectileType.Heal)
             {

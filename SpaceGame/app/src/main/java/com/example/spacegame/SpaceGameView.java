@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.os.Looper;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -20,6 +21,8 @@ import com.example.spacegame.entities.Enemy;
 import com.example.spacegame.entities.Healable;
 import com.example.spacegame.entities.Projectile;
 import com.example.spacegame.entities.SpaceShip;
+
+import java.util.logging.Handler;
 
 public class SpaceGameView extends SurfaceView implements Runnable{
 
@@ -47,15 +50,18 @@ public class SpaceGameView extends SurfaceView implements Runnable{
 
     Bomb[] bombs;
 
+    PointF touchPoint;
+    PointF playerPoint;
+
     Healable[] healables;
     private static int bombsDetonated = 0;
     private static int healsConsumed = 0;
 
-    private int currentWave = 1;
+    private int currentWave = 0;
     private int waveEnemies;
 
     // holds current active enemies object on screen
-    private Enemy[] currentEnemies={null,null,null};
+    private static Enemy[] currentEnemies;
 
 
     public SpaceGameView(Context context, int x, int y) {
@@ -80,6 +86,11 @@ public class SpaceGameView extends SurfaceView implements Runnable{
         healsConsumed++;
     }
 
+    public static Enemy[] getEnemies()
+    {
+        return currentEnemies;
+    }
+
     public boolean checkIsOnFreeSurface(RectF rect) {
         // TODO: return true if the rect is in free of the other objects area on screen and is surrounded by some additional free area
         return true;
@@ -88,8 +99,18 @@ public class SpaceGameView extends SurfaceView implements Runnable{
     private void initLevel()
     {
         spaceShip = new SpaceShip(context, this, screenX, screenY);
-        bullet = new Bullet(context, spaceShip.getX(), spaceShip.getY(), 50, Projectile.ProjectileType.Bullet);
+        bullet = new Bullet(context, spaceShip.getX(), spaceShip.getY(), 100, Projectile.ProjectileType.Bullet);
+       startWave();
+    }
 
+    private void startWave()
+    {
+        spawnHealsAndBombs();
+        generateNewEnemiesWave();
+    }
+
+    private void spawnHealsAndBombs()
+    {
         bombs = new Bomb[3];
         healables = new Healable[3];
 
@@ -108,18 +129,16 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             healables[i] = new Healable(context, healX, healY, 0, Projectile.ProjectileType.Heal);
             healables[i].setActive();
         }
-
-        Toast wavePopUp = Toast.makeText(context, "Wave: "+Integer.toString(this.currentWave), Toast.LENGTH_SHORT);
-        wavePopUp.show();
-
-        generateNewEnemiesWave();
     }
 
-    private void generateNewEnemiesWave(){
+    private void generateNewEnemiesWave()
+    {
+        currentEnemies = new Enemy[3];
         this.waveEnemies=3;
         this.currentWave+=1;
+
         for(int i=0; i<3; i++){
-            this.currentEnemies[i]=new Enemy(context,this,this.screenX,this.screenY);
+            currentEnemies[i] = new Enemy(context,this,screenX,screenY);
         }
         for(Enemy enemy:currentEnemies){
             enemy.setStatus(true);
@@ -154,7 +173,6 @@ public class SpaceGameView extends SurfaceView implements Runnable{
 
     private void update()
     {
-        spaceShip.update(fps);
 
         // Check to see if player health is over 100, this will be true once a healable item has been consumed
         if(spaceShip.getHealth() > 100)
@@ -174,12 +192,23 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             endGame("Defeat");
         }
 
+        for(Enemy enemy : currentEnemies)
+        {
+            if(enemy.getHealth() <= 0 && enemy.getStatus())
+            {
+                enemy.setStatus(false);
+                this.waveEnemies--;
+                this.score+=10;
+            }
+        }
+
         if(this.currentWave == 8 && this.waveEnemies <= 0)
         {
             endGame("Victory");
         }
-        else if (this.waveEnemies==0){
-            generateNewEnemiesWave();
+
+        if (this.waveEnemies==0 && this.currentWave < 8){
+            startWave();
         }
 
         for (Bomb bomb : bombs) {
@@ -223,11 +252,11 @@ public class SpaceGameView extends SurfaceView implements Runnable{
         switch(motionEvent.getAction() & MotionEvent.ACTION_MASK)
         {
             case MotionEvent.ACTION_DOWN:
-                PointF touchPoint = new PointF();
+                touchPoint = new PointF();
                 touchPoint.x = motionEvent.getX();
                 touchPoint.y = motionEvent.getY();
 
-                PointF playerPoint = new PointF();
+                playerPoint = new PointF();
                 playerPoint.x = spaceShip.getRect().left;
                 playerPoint.y = spaceShip.getRect().top;
 
@@ -243,7 +272,7 @@ public class SpaceGameView extends SurfaceView implements Runnable{
                 spaceShip.setStatus(false);
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
-                bullet.fireBullet(fps, spaceShip.getDirectionAngle());
+                bullet.fireBullet(fps, getAngle(touchPoint, playerPoint));
                 break;
             default:
                 break;
@@ -264,6 +293,8 @@ public class SpaceGameView extends SurfaceView implements Runnable{
 
             // Draw Player
             canvas.drawBitmap(spaceShip.getBitmap(), spaceShip.getX(), spaceShip.getY(), paint);
+            paint.setColor(Color.argb(150, 255, 255, 255));
+            canvas.drawRect(spaceShip.getCollisionRect(), paint);
 
             // Draw Bullet
             if (bullet.getStatus()) {
@@ -299,9 +330,8 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             }
 
             paint.setColor(Color.argb(255, 240, 219, 31));
-            paint.setTextSize(40);
-            canvas.drawText("Score: " + score + "   Lives: " +
-                    lives, 10, 50, paint);
+            paint.setTextSize(50);
+            canvas.drawText("Score: " + score + "   Lives: " + lives + "    Wave: "+ currentWave, 10, 50, paint);
 
             ourHolder.unlockCanvasAndPost(canvas);
             paused = false;

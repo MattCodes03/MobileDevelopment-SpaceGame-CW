@@ -7,6 +7,7 @@ import static com.example.spacegame.SpaceGameView.screenY;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.RectF;
 import android.os.Debug;
 import android.os.Handler;
 import android.util.Log;
@@ -39,12 +40,11 @@ public class Bullet extends Projectile{
 
         shooting_x = player.getX();
         shooting_y = player.getY();
+
     }
 
     public void update(long fps)
     {
-        this.x = player.getX();
-        this.y = player.getY();
 
         this.checkForCollisionWithScreenEdges();
 

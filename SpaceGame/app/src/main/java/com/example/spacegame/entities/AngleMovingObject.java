@@ -30,6 +30,8 @@ public class AngleMovingObject extends Thread {
     double usableScreenY;
     double navigationBarHeight=0;
 
+    RectF collisionBox;
+
     Context context;
 
     AngleMovingObject(Context context, SpaceGameView spaceGameView, int screenX, int screenY){
@@ -39,6 +41,9 @@ public class AngleMovingObject extends Thread {
         this.height = screenY / 10f;
         this.screenX=screenX;
         this.screenY=screenY;
+
+        this.collisionBox = new RectF();
+
     }
 
     void initialise(Bitmap scaledBitmap){
@@ -58,9 +63,10 @@ public class AngleMovingObject extends Thread {
             double x = Math.random()*screenX;
             double y = Math.random()*screenY;
 
-            this.directionAngle=Math.random()*360;
-
-            this.setRectangle(x,y);
+            this.collisionBox.left = (int) x;
+            this.collisionBox.top = (int) y;
+            this.collisionBox.right = (int) (x + this.getWidth());
+            this.collisionBox.bottom = (int) (y + this.getHeight());
 
         } while (!this.spaceGameView.checkIsOnFreeSurface(this.rect));
         this.stepHorizontal=screenX/100f;
@@ -81,6 +87,12 @@ public class AngleMovingObject extends Thread {
         destinationRect.left=currentRect.left;
         destinationRect.bottom=currentRect.bottom;
         destinationRect.right=currentRect.right;
+
+        this.collisionBox.left = (int) currentRect.left;
+        this.collisionBox.top = (int) currentRect.top;
+        this.collisionBox.right = (int) (currentRect.left + this.getWidth());
+        this.collisionBox.bottom = (int) (currentRect.top + this.getHeight());
+
 
         this.checkDirectionAngle();
 
@@ -118,6 +130,22 @@ public class AngleMovingObject extends Thread {
             destinationRect.bottom-=ymove;
         }
         return destinationRect;
+    }
+
+    private float getWidth() {
+        return this.length;
+    }
+
+    private float getHeight() {
+        return this.height;
+    }
+
+    private float getX() {
+        return this.rect.left;
+    }
+
+    private float getY() {
+        return this.rect.top;
     }
 
     public void checkCollisions(){
@@ -212,5 +240,9 @@ public class AngleMovingObject extends Thread {
 
     public void setDirectionAngle(double directionAngle) {
         this.directionAngle = directionAngle;
+    }
+
+    public RectF getCollisionRect() {
+        return this.collisionBox;
     }
 }
