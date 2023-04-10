@@ -32,21 +32,22 @@ public class Bullet extends AngleMovingObject {
 //    }
 
     public void kill(){
-        this.spaceGameView.setInsideThreadChecking(true);
         super.kill();
-        this.spaceGameView.destroyUnregisterBullet(this);
-        this.spaceGameView.setInsideThreadChecking(false);
+        synchronized (this.spaceGameView){
+            this.spaceGameView.destroyUnregisterBullet(this);
+        }
     }
     public boolean checkCollisions(){
         if (this.rect.left<=0 || this.rect.left>=this.usableScreenX || this.rect.top<=0 || this.rect.top>=this.usableScreenY){
-
             this.kill();
             return true;
         }
         else {
-            if (this.getStatus() && this.spaceGameView.checkBulletCollision(this)){
-                System.out.println("Bullet kill something");
-                this.kill();
+            synchronized (this.spaceGameView){
+                if (this.getStatus() && this.spaceGameView.checkBulletCollision(this)){
+                    System.out.println("Bullet kill something");
+                    this.kill();
+                }
             }
         }
         return false;

@@ -74,7 +74,6 @@ public class SpaceGameView extends SurfaceView implements Runnable{
 
     private ArrayList<Bullet> bulletArrayList=new ArrayList<>();
 
-    private boolean insideThreadChecking=false;
     public SpaceGameView(Context context, int x, int y) {
         super(context);
         this.context=context;
@@ -206,25 +205,25 @@ public class SpaceGameView extends SurfaceView implements Runnable{
 
     private void update()
     {
-        if (!this.insideThreadChecking){
-            // Check to see if player health is over 100, this will be true once a healable item has been consumed
-            if(spaceShip.getHealth() > 100)
-            {
-                this.lives++;
-                spaceShip.setHealth(100);
-            }
+        // Check to see if player health is over 100, this will be true once a healable item has been consumed
+        if(spaceShip.getHealth() > 100)
+        {
+            this.lives++;
+            spaceShip.setHealth(100);
+        }
 
-            if(spaceShip.getHealth() <= 0 && this.lives > 0)
-            {
-                this.lives--;
-                spaceShip.setHealth(100);
-            }
+        if(spaceShip.getHealth() <= 0 && this.lives > 0)
+        {
+            this.lives--;
+            spaceShip.setHealth(100);
+        }
 
-            if(this.lives == 0)
-            {
-                endGame("Defeat");
-            }
+        if(this.lives == 0)
+        {
+            endGame("Defeat");
+        }
 
+        synchronized (currentEnemies){
             for(Enemy enemy : currentEnemies)
             {
                 if(enemy.getHealth() <= 0 && enemy.getStatus())
@@ -234,29 +233,28 @@ public class SpaceGameView extends SurfaceView implements Runnable{
                     this.score+=10;
                 }
             }
-
             if(this.currentWave == 8 && this.currentEnemies.isEmpty())
             {
                 endGame("Victory");
             }
+        }
 
-            if (this.waveEnemies==0 && this.currentWave < 8){
-                startWave();
-            }
+        if (this.waveEnemies==0 && this.currentWave < 8){
+            startWave();
+        }
 
-            for (Bomb bomb : bombs) {
-                bomb.update(fps);
-            }
+        for (Bomb bomb : bombs) {
+            bomb.update(fps);
+        }
 
-            for(Healable healable: healables)
-            {
-                healable.update(fps);
-            }
+        for(Healable healable: healables)
+        {
+            healable.update(fps);
+        }
 
-            if(bullet.getStatus())
-            {
-                bullet.update(fps);
-            }
+        if(bullet.getStatus())
+        {
+            bullet.update(fps);
         }
     }
 
@@ -362,16 +360,12 @@ public class SpaceGameView extends SurfaceView implements Runnable{
         return ret;
     }
 
-    public void setInsideThreadChecking(boolean insideThreadChecking){
-        this.insideThreadChecking=insideThreadChecking;
-    }
     public boolean checkBulletCollision(Bullet bullet){
         boolean ret=false;
-        if (!this.insideThreadChecking){
-            this.insideThreadChecking=true;
+        RectF rect=bullet.getRect();
+        ScreenObjTypeEnum sourceType=bullet.getSourceType();
 
-            RectF rect=bullet.getRect();
-            ScreenObjTypeEnum sourceType=bullet.getSourceType();
+        synchronized (this.currentEnemies){
             Enemy tmpEnemy=null;
             if (sourceType!=ScreenObjTypeEnum.Enemy) for(Enemy enemy: this.currentEnemies )
             {
@@ -396,7 +390,9 @@ public class SpaceGameView extends SurfaceView implements Runnable{
                     generateNewEnemiesWave();
                 }
             }
+        }
 
+        synchronized (currentAllies){
             Ally tmpAlly=null;
             if (sourceType!=ScreenObjTypeEnum.Ally) for(Ally ally: currentAllies )
             {
@@ -417,57 +413,56 @@ public class SpaceGameView extends SurfaceView implements Runnable{
                     generateNewAlliesWave();
                 }
             }
-
-            if (sourceType!=ScreenObjTypeEnum.MainShip && this.positionMatch(rect,spaceShip.getRect())){
-                ret=true;
-                System.out.println("main ship stroke");
-            }
-
-            this.insideThreadChecking=false;
         }
+
+        if (sourceType!=ScreenObjTypeEnum.MainShip && this.positionMatch(rect,spaceShip.getRect())){
+            ret=true;
+            System.out.println("main ship stroke");
+        }
+
         return ret;
     }
 
     private void draw() {
-        if (!this.insideThreadChecking){
-            if (ourHolder.getSurface().isValid()) {
-                canvas = ourHolder.lockCanvas();
-                canvas.drawColor(Color.argb(255, 26, 128, 182));
-                // Draw Background
-                bitmapback = BitmapFactory.decodeResource(context.getResources(), R.drawable.background);
-                bitmapback = Bitmap.createScaledBitmap(bitmapback, (int) (screenX), (int) (screenY), false);
-                canvas.drawBitmap(bitmapback, 0, 0, paint);
+        if (ourHolder.getSurface().isValid()) {
+            canvas = ourHolder.lockCanvas();
+            canvas.drawColor(Color.argb(255, 26, 128, 182));
+            // Draw Background
+            bitmapback = BitmapFactory.decodeResource(context.getResources(), R.drawable.background);
+            bitmapback = Bitmap.createScaledBitmap(bitmapback, (int) (screenX), (int) (screenY), false);
+            canvas.drawBitmap(bitmapback, 0, 0, paint);
 
-                // Draw Player
-                canvas.drawBitmap(spaceShip.getBitmap(), spaceShip.getX(), spaceShip.getY(), paint);
-                paint.setColor(Color.argb(150, 255, 255, 255));
-                //canvas.drawRect(spaceShip.getCollisionRect(), paint);
+            // Draw Player
+            canvas.drawBitmap(spaceShip.getBitmap(), spaceShip.getX(), spaceShip.getY(), paint);
+            paint.setColor(Color.argb(150, 255, 255, 255));
+            //canvas.drawRect(spaceShip.getCollisionRect(), paint);
 
-                // Draw Bullet
-                if (bullet.getStatus()) {
-                    paint.setColor(Color.argb(255, 255, 255, 0));
-                    canvas.drawBitmap(bullet.getBitmap(), bullet.getShootingX(), bullet.getShootingY(), paint);
+            // Draw Bullet
+            if (bullet.getStatus()) {
+                paint.setColor(Color.argb(255, 255, 255, 0));
+                canvas.drawBitmap(bullet.getBitmap(), bullet.getShootingX(), bullet.getShootingY(), paint);
+            }
+
+            // Draw Bombs
+            for (Bomb bomb : bombs) {
+                if (bomb.getStatus()) {
+                    paint.setColor(Color.argb(255, 255, 0, 0));
+                    canvas.drawRect(bomb.getRect(), paint);
                 }
 
-                // Draw Bombs
-                for (Bomb bomb : bombs) {
-                    if (bomb.getStatus()) {
-                        paint.setColor(Color.argb(255, 255, 0, 0));
-                        canvas.drawRect(bomb.getRect(), paint);
-                    }
+            }
 
+            // Draw Healables
+            for (Healable healable : healables) {
+                if (healable.getStatus()) {
+                    paint.setColor(Color.argb(255, 0, 255, 0));
+                    canvas.drawRect(healable.getRect(), paint);
                 }
 
-                // Draw Healables
-                for (Healable healable : healables) {
-                    if (healable.getStatus()) {
-                        paint.setColor(Color.argb(255, 0, 255, 0));
-                        canvas.drawRect(healable.getRect(), paint);
-                    }
+            }
 
-                }
-
-                // draw enemies
+            // draw enemies
+            synchronized (currentEnemies){
                 for(Enemy enemy: currentEnemies )
                 {
                     if (enemy!=null && enemy.getStatus())
@@ -475,7 +470,9 @@ public class SpaceGameView extends SurfaceView implements Runnable{
                         canvas.drawBitmap(enemy.getBitmap(),enemy.getRect().left,enemy.getRect().top,this.paint);
                     }
                 }
+            }
 
+            synchronized (currentAllies){
                 for(Ally ally: currentAllies )
                 {
                     if (ally!=null && ally.getStatus())
@@ -483,19 +480,21 @@ public class SpaceGameView extends SurfaceView implements Runnable{
                         canvas.drawBitmap(ally.getBitmap(),ally.getRect().left,ally.getRect().top,this.paint);
                     }
                 }
+            }
 
+            synchronized (this.bulletArrayList){
                 for(Bullet bullet: this.bulletArrayList){
                     if (bullet.getStatus()){
                         canvas.drawBitmap(bullet.getBitmap(),bullet.getRect().left,bullet.getRect().top,this.paint);
                     }
                 }
-                paint.setColor(Color.argb(255, 240, 219, 31));
-                paint.setTextSize(50);
-                canvas.drawText("Score: " + score + "   Lives: " + lives + "    Wave: "+ currentWave, 10, 50, paint);
-
-                ourHolder.unlockCanvasAndPost(canvas);
-                paused = false;
             }
+            paint.setColor(Color.argb(255, 240, 219, 31));
+            paint.setTextSize(50);
+            canvas.drawText("Score: " + score + "   Lives: " + lives + "    Wave: "+ currentWave, 10, 50, paint);
+
+            ourHolder.unlockCanvasAndPost(canvas);
+            paused = false;
         }
     }
 
