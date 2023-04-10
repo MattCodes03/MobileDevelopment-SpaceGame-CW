@@ -8,22 +8,22 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RectF;
-import android.os.Looper;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.widget.Toast;
 
+import com.example.spacegame.entities.AngleMovingObject;
 import com.example.spacegame.entities.Bomb;
 import com.example.spacegame.entities.Bullet;
+import com.example.spacegame.entities.Bullet2;
 import com.example.spacegame.entities.Enemy;
 import com.example.spacegame.entities.Ally;
 import com.example.spacegame.entities.Healable;
 import com.example.spacegame.entities.Projectile;
 import com.example.spacegame.entities.SpaceShip;
 
-import java.util.logging.Handler;
+import java.util.ArrayList;
 
 public class SpaceGameView extends SurfaceView implements Runnable{
 
@@ -47,7 +47,7 @@ public class SpaceGameView extends SurfaceView implements Runnable{
     private Bitmap bitmapback;
 
     static SpaceShip spaceShip;
-    Bullet bullet;
+    Bullet2 bullet;
 
     Bomb[] bombs;
 
@@ -66,6 +66,9 @@ public class SpaceGameView extends SurfaceView implements Runnable{
     private static Enemy[] currentEnemies;
     private static Ally[] currentAllies;
 
+    private static long downTime;
+
+    private final ArrayList<Bullet> bulletArrayList=new ArrayList<>();
 
     public SpaceGameView(Context context, int x, int y) {
         super(context);
@@ -105,7 +108,7 @@ public class SpaceGameView extends SurfaceView implements Runnable{
     private void initLevel()
     {
         spaceShip = new SpaceShip(context, this, screenX, screenY);
-        bullet = new Bullet(context, spaceShip.getX(), spaceShip.getY(), 100, Projectile.ProjectileType.Bullet);
+        bullet = new Bullet2(context, spaceShip.getX(), spaceShip.getY(), 100, Projectile.ProjectileType.Bullet);
         startWave();
     }
 
@@ -274,6 +277,8 @@ public class SpaceGameView extends SurfaceView implements Runnable{
         switch(motionEvent.getAction() & MotionEvent.ACTION_MASK)
         {
             case MotionEvent.ACTION_MOVE:
+            case MotionEvent.ACTION_DOWN:
+                downTime = System.currentTimeMillis();
                 touchPoint = new PointF();
                 touchPoint.x = motionEvent.getX();
                 touchPoint.y = motionEvent.getY();
@@ -291,15 +296,33 @@ public class SpaceGameView extends SurfaceView implements Runnable{
 
                 break;
             case MotionEvent.ACTION_UP:
+                if (System.currentTimeMillis()-downTime<100){
+                    this.fireMainShipBullet();
+//                    bullet.fireBullet(fps, getAngle(touchPoint, playerPoint));
+                }
                 spaceShip.setStatus(false);
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
-                bullet.fireBullet(fps, getAngle(touchPoint, playerPoint));
+                this.fireMainShipBullet();
+//                bullet.fireBullet(fps, getAngle(touchPoint, playerPoint));
                 break;
             default:
                 break;
         }
         return true;
+    }
+
+    private void fireMainShipBullet(){
+        Bullet bullet=new Bullet(this.context,this,screenX,screenY,spaceShip.getX()+spaceShip.getRect().width()/2,spaceShip.getY()+spaceShip.getRect().height()/2,spaceShip.getDirectionAngle());
+        this.fireBullet(bullet);
+    }
+
+    public void fireBullet(Bullet bullet){
+        this.bulletArrayList.add(bullet);
+    }
+
+    public void destroyUnregisterBullet(AngleMovingObject bullet){
+        this.bulletArrayList.remove(bullet);
     }
 
     private void draw() {
@@ -359,6 +382,11 @@ public class SpaceGameView extends SurfaceView implements Runnable{
                 }
             }
 
+            for(Bullet bullet: this.bulletArrayList){
+                if (bullet.getStatus()){
+                    canvas.drawBitmap(bullet.getBitmap(),bullet.getRect().left,bullet.getRect().top,this.paint);
+                }
+            }
             paint.setColor(Color.argb(255, 240, 219, 31));
             paint.setTextSize(50);
             canvas.drawText("Score: " + score + "   Lives: " + lives + "    Wave: "+ currentWave, 10, 50, paint);

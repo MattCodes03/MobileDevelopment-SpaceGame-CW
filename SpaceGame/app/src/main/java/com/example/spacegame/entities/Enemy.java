@@ -12,7 +12,7 @@ public class Enemy extends AngleMovingObject {
 
     float health;
     public Enemy(Context context, SpaceGameView spaceGameView, int screenX, int screenY) {
-        super(context,spaceGameView,screenX,screenY);
+        super(context,spaceGameView,screenX,screenY,true);
         Bitmap scaledBitmap=BitmapFactory.decodeResource(context.getResources(), R.drawable.enemyship);
         scaledBitmap = Bitmap.createScaledBitmap(scaledBitmap, (int) (this.length * 1.25), (int) (this.height * 0.75), false); //cross the left screen limit
         initialise(scaledBitmap);

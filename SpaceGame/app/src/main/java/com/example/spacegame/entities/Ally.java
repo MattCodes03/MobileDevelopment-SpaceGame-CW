@@ -13,7 +13,7 @@ public class Ally extends AngleMovingObject {
     float health;
 
     public Ally(Context context, SpaceGameView spaceGameView, int screenX, int screenY) {
-        super(context, spaceGameView, screenX, screenY);
+        super(context, spaceGameView, screenX, screenY,true);
         Bitmap scaledBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.spaceshipright);
         scaledBitmap = Bitmap.createScaledBitmap(scaledBitmap, (int) (this.length * 0.6), (int) (this.height * 0.6), false); //cross the left screen limit
         initialise(scaledBitmap);
