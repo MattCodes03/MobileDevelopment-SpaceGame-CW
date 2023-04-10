@@ -27,7 +27,8 @@ public class SpaceShip extends AngleMovingObject {
         this.shipSpeed = 350;
 
         Bitmap scaledBitmap=BitmapFactory.decodeResource(context.getResources(), R.drawable.playerbitmap);
-        scaledBitmap = Bitmap.createScaledBitmap(scaledBitmap, (int)screenX/3, (int)screenX/3, false); //cross the left screen limit
+        scaledBitmap = Bitmap.createScaledBitmap(scaledBitmap, (int)screenX/7, (int)screenX/7, false); //cross the left screen limit
+
 
         this.movingState=false;
         initialise(scaledBitmap);

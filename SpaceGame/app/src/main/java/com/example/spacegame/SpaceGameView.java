@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.example.spacegame.entities.Bomb;
 import com.example.spacegame.entities.Bullet;
 import com.example.spacegame.entities.Enemy;
+import com.example.spacegame.entities.Ally;
 import com.example.spacegame.entities.Healable;
 import com.example.spacegame.entities.Projectile;
 import com.example.spacegame.entities.SpaceShip;
@@ -59,9 +60,11 @@ public class SpaceGameView extends SurfaceView implements Runnable{
 
     private int currentWave = 0;
     private int waveEnemies;
+    private int waveAllies;
 
     // holds current active enemies object on screen
     private static Enemy[] currentEnemies;
+    private static Ally[] currentAllies;
 
 
     public SpaceGameView(Context context, int x, int y) {
@@ -75,7 +78,6 @@ public class SpaceGameView extends SurfaceView implements Runnable{
 
         initLevel();
     }
-
     public static void updateBombsDetonatedCount()
     {
         bombsDetonated++;
@@ -90,6 +92,10 @@ public class SpaceGameView extends SurfaceView implements Runnable{
     {
         return currentEnemies;
     }
+    public static Ally[] getAllies()
+    {
+        return currentAllies;
+    }
 
     public boolean checkIsOnFreeSurface(RectF rect) {
         // TODO: return true if the rect is in free of the other objects area on screen and is surrounded by some additional free area
@@ -100,13 +106,14 @@ public class SpaceGameView extends SurfaceView implements Runnable{
     {
         spaceShip = new SpaceShip(context, this, screenX, screenY);
         bullet = new Bullet(context, spaceShip.getX(), spaceShip.getY(), 100, Projectile.ProjectileType.Bullet);
-       startWave();
+        startWave();
     }
 
     private void startWave()
     {
         spawnHealsAndBombs();
         generateNewEnemiesWave();
+        generateNewAlliesWave();
     }
 
     private void spawnHealsAndBombs()
@@ -144,6 +151,21 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             enemy.setStatus(true);
         }
     }
+
+    private void generateNewAlliesWave()
+    {
+        currentAllies = new Ally[3];
+        this.waveAllies=3;
+        //this.currentWave = 1;
+
+        for(int i=0; i<3; i++){
+            currentAllies[i] = new Ally(context,this,screenX,screenY);
+        }
+        for(Ally Ally:currentAllies){
+            Ally.setStatus(true);
+        }
+    }
+
     public static SpaceShip getPlayer()
     {
         return spaceShip;
@@ -251,7 +273,7 @@ public class SpaceGameView extends SurfaceView implements Runnable{
     public boolean onTouchEvent(MotionEvent motionEvent) {
         switch(motionEvent.getAction() & MotionEvent.ACTION_MASK)
         {
-            case MotionEvent.ACTION_DOWN:
+            case MotionEvent.ACTION_MOVE:
                 touchPoint = new PointF();
                 touchPoint.x = motionEvent.getX();
                 touchPoint.y = motionEvent.getY();
@@ -294,7 +316,7 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             // Draw Player
             canvas.drawBitmap(spaceShip.getBitmap(), spaceShip.getX(), spaceShip.getY(), paint);
             paint.setColor(Color.argb(150, 255, 255, 255));
-            canvas.drawRect(spaceShip.getCollisionRect(), paint);
+            //canvas.drawRect(spaceShip.getCollisionRect(), paint);
 
             // Draw Bullet
             if (bullet.getStatus()) {
@@ -326,6 +348,14 @@ public class SpaceGameView extends SurfaceView implements Runnable{
                 if (enemy!=null && enemy.getStatus())
                 {
                     canvas.drawBitmap(enemy.getBitmap(),enemy.getRect().left,enemy.getRect().top,this.paint);
+                }
+            }
+
+            for(Ally ally: currentAllies )
+            {
+                if (ally!=null && ally.getStatus())
+                {
+                    canvas.drawBitmap(ally.getBitmap(),ally.getRect().left,ally.getRect().top,this.paint);
                 }
             }
 
