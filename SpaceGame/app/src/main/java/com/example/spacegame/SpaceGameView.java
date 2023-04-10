@@ -225,15 +225,15 @@ public class SpaceGameView extends SurfaceView implements Runnable{
                 endGame("Defeat");
             }
 
-            for(Enemy enemy : currentEnemies)
-            {
-                if(enemy.getHealth() <= 0 && enemy.getStatus())
-                {
-                    enemy.setStatus(false);
-                    this.waveEnemies--;
-                    this.score+=10;
-                }
-            }
+//            for(Enemy enemy : currentEnemies)
+//            {
+//                if(enemy.getHealth() <= 0 && enemy.getStatus())
+//                {
+//                    enemy.setStatus(false);
+//                    this.waveEnemies--;
+//                    this.score+=10;
+//                }
+//            }
 
             if(this.currentWave == 8 && this.currentEnemies.isEmpty())
             {
@@ -389,7 +389,7 @@ public class SpaceGameView extends SurfaceView implements Runnable{
                 this.currentEnemies.remove(tmpEnemy);
                 System.out.println("kill enemy");
                 tmpEnemy.kill();
-                this.currentWave--;
+                this.score+=10;
                 System.out.println("check enemy isEmpty");
                 if (this.currentEnemies.isEmpty()){ //this.currentWave==0
                     System.out.println("generate new enemies wave");
@@ -418,9 +418,10 @@ public class SpaceGameView extends SurfaceView implements Runnable{
                 }
             }
 
-            if (sourceType!=ScreenObjTypeEnum.MainShip && this.positionMatch(rect,spaceShip.getRect())){
+            if (sourceType!=ScreenObjTypeEnum.MainShip && sourceType!=ScreenObjTypeEnum.Ally && this.positionMatch(rect,spaceShip.getRect())){
                 ret=true;
                 System.out.println("main ship stroke");
+                spaceShip.takeDamage(100);
             }
 
             this.insideThreadChecking=false;
@@ -443,11 +444,11 @@ public class SpaceGameView extends SurfaceView implements Runnable{
                 paint.setColor(Color.argb(150, 255, 255, 255));
                 //canvas.drawRect(spaceShip.getCollisionRect(), paint);
 
-                // Draw Bullet
-                if (bullet.getStatus()) {
-                    paint.setColor(Color.argb(255, 255, 255, 0));
-                    canvas.drawBitmap(bullet.getBitmap(), bullet.getShootingX(), bullet.getShootingY(), paint);
-                }
+//                // Draw Bullet
+//                if (bullet.getStatus()) {
+//                    paint.setColor(Color.argb(255, 255, 255, 0));
+//                    canvas.drawBitmap(bullet.getBitmap(), bullet.getShootingX(), bullet.getShootingY(), paint);
+//                }
 
                 // Draw Bombs
                 for (Bomb bomb : bombs) {
