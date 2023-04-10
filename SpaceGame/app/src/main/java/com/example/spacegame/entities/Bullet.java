@@ -11,8 +11,11 @@ import java.util.Random;
 
 public class Bullet extends AngleMovingObject {
 
-    public Bullet(Context context, SpaceGameView spaceGameView, int screenX, int screenY, double startX, double startY, double startAngle) {
+    ScreenObjTypeEnum sourceType;
+
+    public Bullet(Context context, SpaceGameView spaceGameView, int screenX, int screenY, double startX, double startY, double startAngle, ScreenObjTypeEnum sourceType) {
         super(context,spaceGameView,screenX,screenY);
+        this.sourceType=sourceType;
         Bitmap scaledBitmap= BitmapFactory.decodeResource(context.getResources(), R.drawable.bullet);
         scaledBitmap = Bitmap.createScaledBitmap(scaledBitmap, (int) (this.length * 0.15), (int) (this.height * 0.075), false); //cross the left screen limit
         initialise(scaledBitmap,startX,startY,startAngle,10);
@@ -20,16 +23,33 @@ public class Bullet extends AngleMovingObject {
         this.start();
     }
 
-    protected void movementDebug(){
-        System.out.println("bullet movement"+ Math.random()*10);
+    public ScreenObjTypeEnum getSourceType(){
+        return this.sourceType;
     }
 
-    public void checkCollisions(){
+//    protected void movementDebug(){
+//        System.out.println("bullet movement"+ Math.random()*10);
+//    }
+
+    public void kill(){
+        this.spaceGameView.setInsideThreadChecking(true);
+        super.kill();
+        this.spaceGameView.destroyUnregisterBullet(this);
+        this.spaceGameView.setInsideThreadChecking(false);
+    }
+    public boolean checkCollisions(){
         if (this.rect.left<=0 || this.rect.left>=this.usableScreenX || this.rect.top<=0 || this.rect.top>=this.usableScreenY){
-            this.setStatus(false);
-            this.interrupt();
-            this.spaceGameView.destroyUnregisterBullet(this);
+
+            this.kill();
+            return true;
         }
+        else {
+            if (this.getStatus() && this.spaceGameView.checkBulletCollision(this)){
+                System.out.println("Bullet kill something");
+                this.kill();
+            }
+        }
+        return false;
     }
 
 }

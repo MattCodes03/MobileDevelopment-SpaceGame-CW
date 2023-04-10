@@ -38,11 +38,14 @@ public class AngleMovingObject extends Thread {
     Context context;
     boolean doBulletShooting=false;
 
+    ScreenObjTypeEnum sourceType;
+
     AngleMovingObject(Context context, SpaceGameView spaceGameView, int screenX, int screenY){
         this.constructor(context,spaceGameView,screenX,screenY,false);
     }
-    AngleMovingObject(Context context, SpaceGameView spaceGameView, int screenX, int screenY, boolean doBulletShooting){
+    AngleMovingObject(Context context, SpaceGameView spaceGameView, int screenX, int screenY, boolean doBulletShooting, ScreenObjTypeEnum sourceType){
         this.constructor(context,spaceGameView,screenX,screenY,doBulletShooting);
+        this.sourceType=sourceType;
     }
     void constructor(Context context, SpaceGameView spaceGameView, int screenX, int screenY, boolean doBulletShooting){
         this.context=context;
@@ -96,8 +99,8 @@ public class AngleMovingObject extends Thread {
 
             this.rect.left = (int) startX;
             this.rect.top = (int) startY;
-            this.rect.right = (int) (startX + this.getWidth());
-            this.rect.bottom = (int) (startY + this.getHeight());
+            this.rect.right = (int) (startX + scaledBitmap.getWidth());
+            this.rect.bottom = (int) (startY + scaledBitmap.getHeight());
 
         } while (!this.spaceGameView.checkIsOnFreeSurface(this.rect));
         this.stepHorizontal=screenX/100f;
@@ -168,11 +171,11 @@ public class AngleMovingObject extends Thread {
     }
 
     private float getWidth() {
-        return this.length;
+        return this.rect.width();
     }
 
     private float getHeight() {
-        return this.height;
+        return this.rect.height();
     }
 
     private float getX() {
@@ -183,7 +186,7 @@ public class AngleMovingObject extends Thread {
         return this.rect.top;
     }
 
-    public void checkCollisions(){
+    public boolean checkCollisions(){
         if (this.rect.left<=0 || this.rect.left>=this.usableScreenX || this.rect.top<=0 || this.rect.top>=this.usableScreenY){
             double old=this.directionAngle;
             double oppositeDirection=this.checkAngle(this.directionAngle+180);
@@ -210,14 +213,19 @@ public class AngleMovingObject extends Thread {
                 this.rect.top-=diff;
                 this.rect.bottom-=diff;
             }
-//            Log.d("enemy", "checkCollisions "+old+" -> "+this.directionAngle);
+            return true;
         }
+        return false;
     }
     private void checkDirectionAngle(){
         this.directionAngle=this.checkAngle(this.directionAngle);
         Matrix matrix = new Matrix();
         matrix.postRotate((float)this.directionAngle);
         this.bitmap = Bitmap.createBitmap(this.scaledBitmap, 0, 0, this.scaledBitmap.getWidth(), this.scaledBitmap.getHeight(), matrix, true);
+    }
+    public void kill(){
+        this.setStatus(false);
+        this.interrupt();
     }
     public double checkAngle(double angle){
         if (angle<0){
@@ -258,11 +266,11 @@ public class AngleMovingObject extends Thread {
 //                    Log.d("Angle","We are after change...");
 //                }
 
-                if (this.doBulletShooting){
+                if (this.status && this.doBulletShooting){
                     if (System.currentTimeMillis()-this.lastBulletTime>this.launchBulletPeriodicTime){
                         this.lastBulletTime=System.currentTimeMillis();
                         this.genPeriodicNextBulletLaunchTime();
-                        Bullet bullet=new Bullet(this.context,this.spaceGameView,(int)this.screenX,(int)this.screenY,this.getX()+this.getRect().width()/2,this.getY()+this.getRect().height()/2,this.getDirectionAngle());
+                        Bullet bullet=new Bullet(this.context,this.spaceGameView,(int)this.screenX,(int)this.screenY,this.getX()+this.getRect().width()/2,this.getY()+this.getRect().height()/2,this.getDirectionAngle(),this.sourceType);
                         this.spaceGameView.fireBullet(bullet);
                     }
                 }
