@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Space War</string>
+    <string name="quit">Quit</string>
+    <string name="replay">Replay</string>
 </resources>

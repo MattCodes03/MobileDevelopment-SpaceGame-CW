@@ -1,5 +1,7 @@
 package com.example.spacegame;
 
+import static java.lang.System.exit;
+
 import android.content.Context;
 import android.content.Intent;
 
@@ -115,13 +117,19 @@ public class SpaceGameView extends SurfaceView implements Runnable{
     {
         spaceShip = new SpaceShip(context, this, screenX, screenY);
         allySpawned = false;
+        this.score = 0;
         startWave();
     }
 
     private void startWave()
     {
-        spawnHealsAndBombs();
-        generateNewEnemiesWave();
+        if(this.currentWave == 8)
+        {
+            endGame("Victory");
+        }else {
+            spawnHealsAndBombs();
+            generateNewEnemiesWave();
+        }
     }
 
     private void spawnHealsAndBombs()
@@ -227,18 +235,8 @@ public class SpaceGameView extends SurfaceView implements Runnable{
                 if(enemy.getHealth() <= 0 && enemy.getStatus())
                 {
                     enemy.setStatus(false);
-                    this.waveEnemies--;
-                    this.score+=10;
                 }
             }
-            if(this.currentWave == 8 && this.currentEnemies.isEmpty())
-            {
-                endGame("Victory");
-            }
-        }
-
-        if (this.waveEnemies==0 && this.currentWave < 8){
-            startWave();
         }
 
         for (Bomb bomb : bombs) {
@@ -265,20 +263,15 @@ public class SpaceGameView extends SurfaceView implements Runnable{
 
     private void endGame(String status)
     {
-        /*
-          @param Status - This determines whether the game ends as a victory or defeat, we want to pass this alongside the stats
-          TODO: Using an Intent pass the game statistics to the End Game Screen, and end this activity while starting the EndScreenActivity.
-            We want to pass this.score, bombsDetonated, healsConsumed and the parameter status
-         */
+        Intent intent = new Intent(context, EndScreenActivity.class);
 
-//        Intent intent = new Intent(context, EndScreenActivity.class);
-//
-//        intent.putExtra("Status", status);
-//        intent.putExtra("Score", this.score);
-//        intent.putExtra("Bombs", bombsDetonated);
-//        intent.putExtra("Heals", healsConsumed);
-//
-//        context.startActivity(intent);
+        intent.putExtra("Status", status);
+        intent.putExtra("Score", Integer.toString(this.score));
+        intent.putExtra("Bombs", Integer.toString(bombsDetonated));
+        intent.putExtra("Heals", Integer.toString(healsConsumed));
+
+        context.startActivity(intent);
+        exit(0);
     }
 
     public double getAngle(PointF p1, PointF p2) {
@@ -382,11 +375,12 @@ public class SpaceGameView extends SurfaceView implements Runnable{
                 this.currentEnemies.remove(tmpEnemy);
                 System.out.println("kill enemy");
                 tmpEnemy.kill();
+                this.waveEnemies--;
                 this.score+=10;
                 System.out.println("check enemy isEmpty");
                 if (this.currentEnemies.isEmpty()){ //this.currentWave==0
                     System.out.println("generate new enemies wave");
-                    generateNewEnemiesWave();
+                    startWave();
                 }
             }
         }
@@ -408,9 +402,6 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             if (tmpAlly!=null) {
                 this.currentAllies.remove(tmpAlly);
                 tmpAlly.kill();
-                if (this.currentAllies.isEmpty()){
-                    generateNewAlliesWave();
-                }
             }
         }
 
