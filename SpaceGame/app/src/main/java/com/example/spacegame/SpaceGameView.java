@@ -1,6 +1,9 @@
 package com.example.spacegame;
 
 import android.content.Context;
+import android.content.Intent;
+
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -252,6 +255,12 @@ public class SpaceGameView extends SurfaceView implements Runnable{
         {
             generateNewAlliesWave();
         }
+
+        if(this.score == 50 && !allySpawned)
+        {
+            allySpawned = true;
+            generateNewAlliesWave();
+        }
     }
 
     private void endGame(String status)
@@ -262,7 +271,14 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             We want to pass this.score, bombsDetonated, healsConsumed and the parameter status
          */
 
-        this.pause();
+//        Intent intent = new Intent(context, EndScreenActivity.class);
+//
+//        intent.putExtra("Status", status);
+//        intent.putExtra("Score", this.score);
+//        intent.putExtra("Bombs", bombsDetonated);
+//        intent.putExtra("Heals", healsConsumed);
+//
+//        context.startActivity(intent);
     }
 
     public double getAngle(PointF p1, PointF p2) {
@@ -459,7 +475,7 @@ public class SpaceGameView extends SurfaceView implements Runnable{
                         canvas.drawBitmap(ally.getBitmap(),ally.getRect().left,ally.getRect().top,this.paint);
                     }
                 }
-            }
+             }
 
             synchronized (this.bulletArrayList){
                 for(int i = 0; i < this.bulletArrayList.size(); i++){
