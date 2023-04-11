@@ -16,7 +16,6 @@ import android.view.SurfaceView;
 import com.example.spacegame.entities.AngleMovingObject;
 import com.example.spacegame.entities.Bomb;
 import com.example.spacegame.entities.Bullet;
-import com.example.spacegame.entities.Bullet2;
 import com.example.spacegame.entities.Enemy;
 import com.example.spacegame.entities.Ally;
 import com.example.spacegame.entities.Healable;
@@ -48,7 +47,6 @@ public class SpaceGameView extends SurfaceView implements Runnable{
     private Bitmap bitmapback;
 
     static SpaceShip spaceShip;
-    Bullet2 bullet;
 
     Bomb[] bombs;
 
@@ -61,7 +59,8 @@ public class SpaceGameView extends SurfaceView implements Runnable{
 
     private int currentWave = 0;
     private int waveEnemies;
-    private int waveAllies;
+
+    boolean allySpawned;
 
     // holds current active enemies object on screen
     //private static Enemy[] currentEnemies;
@@ -112,7 +111,7 @@ public class SpaceGameView extends SurfaceView implements Runnable{
     private void initLevel()
     {
         spaceShip = new SpaceShip(context, this, screenX, screenY);
-        bullet = new Bullet2(context, spaceShip.getX(), spaceShip.getY(), 100, Projectile.ProjectileType.Bullet);
+        allySpawned = false;
         startWave();
     }
 
@@ -120,7 +119,6 @@ public class SpaceGameView extends SurfaceView implements Runnable{
     {
         spawnHealsAndBombs();
         generateNewEnemiesWave();
-        generateNewAlliesWave();
     }
 
     private void spawnHealsAndBombs()
@@ -163,11 +161,8 @@ public class SpaceGameView extends SurfaceView implements Runnable{
     private void generateNewAlliesWave()
     {
         if (this.currentAllies.isEmpty()){
-//        currentAllies = new Ally[3];
-            this.waveAllies=3;
-            //this.currentWave = 1;
 
-            for(int i=0; i<3; i++){
+            for(int i=0; i<1; i++){
                 currentAllies.add(new Ally(context,this,screenX,screenY));
             }
             for(Ally Ally:currentAllies){
@@ -252,9 +247,10 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             healable.update(fps);
         }
 
-        if(bullet.getStatus())
+        // Spawn Player Ally once points reach 50
+        if(this.score == 50 && !this.allySpawned)
         {
-            bullet.update(fps);
+            generateNewAlliesWave();
         }
     }
 
@@ -329,23 +325,9 @@ public class SpaceGameView extends SurfaceView implements Runnable{
     }
 
     public void destroyUnregisterBullet(AngleMovingObject bullet){
+
         this.bulletArrayList.remove(bullet);
     }
-
-//    public void destroyEnemy(Enemy enemy){
-//        this.currentEnemies.remove(enemy);
-//        this.currentWave--;
-//        if (this.currentWave==0){
-//            generateNewEnemiesWave();
-//        }
-//    }
-
-//    public void destroyAlly(Ally ally){
-//        this.currentAllies.remove(ally);
-//        if (this.currentAllies.isEmpty()){
-//            generateNewAlliesWave();
-//        }
-//    }
 
     private boolean positionMatch(RectF rect1, RectF rect2){
         boolean ret=false;
@@ -365,6 +347,7 @@ public class SpaceGameView extends SurfaceView implements Runnable{
         RectF rect=bullet.getRect();
         ScreenObjTypeEnum sourceType=bullet.getSourceType();
 
+        // Enemy Bullet Collisions
         synchronized (this.currentEnemies){
             Enemy tmpEnemy=null;
             if (sourceType!=ScreenObjTypeEnum.Enemy) for(Enemy enemy: this.currentEnemies )
@@ -383,7 +366,7 @@ public class SpaceGameView extends SurfaceView implements Runnable{
                 this.currentEnemies.remove(tmpEnemy);
                 System.out.println("kill enemy");
                 tmpEnemy.kill();
-                this.currentWave--;
+                this.score+=10;
                 System.out.println("check enemy isEmpty");
                 if (this.currentEnemies.isEmpty()){ //this.currentWave==0
                     System.out.println("generate new enemies wave");
@@ -392,9 +375,10 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             }
         }
 
+        // Ally Bullet Collisions
         synchronized (currentAllies){
             Ally tmpAlly=null;
-            if (sourceType!=ScreenObjTypeEnum.Ally) for(Ally ally: currentAllies )
+            if (sourceType!=ScreenObjTypeEnum.Ally && sourceType != ScreenObjTypeEnum.MainShip) for(Ally ally: currentAllies )
             {
                 if (ally!=null && ally.getStatus())
                 {
@@ -408,16 +392,17 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             if (tmpAlly!=null) {
                 this.currentAllies.remove(tmpAlly);
                 tmpAlly.kill();
-                this.waveAllies--;
                 if (this.currentAllies.isEmpty()){
                     generateNewAlliesWave();
                 }
             }
         }
 
-        if (sourceType!=ScreenObjTypeEnum.MainShip && this.positionMatch(rect,spaceShip.getRect())){
+        // Player Bullet Collisions
+        if (sourceType!=ScreenObjTypeEnum.MainShip && sourceType!=ScreenObjTypeEnum.Ally && this.positionMatch(rect,spaceShip.getRect())){
             ret=true;
             System.out.println("main ship stroke");
+            spaceShip.takeDamage(100);
         }
 
         return ret;
@@ -435,13 +420,7 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             // Draw Player
             canvas.drawBitmap(spaceShip.getBitmap(), spaceShip.getX(), spaceShip.getY(), paint);
             paint.setColor(Color.argb(150, 255, 255, 255));
-            //canvas.drawRect(spaceShip.getCollisionRect(), paint);
 
-            // Draw Bullet
-            if (bullet.getStatus()) {
-                paint.setColor(Color.argb(255, 255, 255, 0));
-                canvas.drawBitmap(bullet.getBitmap(), bullet.getShootingX(), bullet.getShootingY(), paint);
-            }
 
             // Draw Bombs
             for (Bomb bomb : bombs) {
@@ -483,8 +462,9 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             }
 
             synchronized (this.bulletArrayList){
-                for(Bullet bullet: this.bulletArrayList){
-                    if (bullet.getStatus()){
+                for(int i = 0; i < this.bulletArrayList.size(); i++){
+                    if (bulletArrayList.get(i).getStatus()){
+                        Bullet bullet = bulletArrayList.get(i);
                         canvas.drawBitmap(bullet.getBitmap(),bullet.getRect().left,bullet.getRect().top,this.paint);
                     }
                 }
