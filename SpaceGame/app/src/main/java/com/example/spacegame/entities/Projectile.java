@@ -8,6 +8,8 @@ import android.graphics.RectF;
 
 import com.example.spacegame.SpaceGameView;
 
+import java.util.ArrayList;
+
 public class Projectile {
     Context context;
     RectF rect;
@@ -34,7 +36,6 @@ public class Projectile {
     {
         Bomb,
         Heal,
-        Bullet
     }
 
     Projectile(Context context, float x, float y, float damage, ProjectileType type)
@@ -66,28 +67,12 @@ public class Projectile {
         if(this.type == ProjectileType.Bomb || this.type == ProjectileType.Heal)
         {
             checkForCollisionWithPlayer();
-        }else if(this.type == ProjectileType.Bullet)
-        {
-            checkForCollisionWithEnemy();
         }
 
         this.rect.left = x;
         this.rect.right = x + length;
         this.rect.top = y;
         this.rect.bottom = y + height;
-    }
-    public void checkForCollisionWithEnemy()
-    {
-        Enemy[] enemies = SpaceGameView.getEnemies();
-
-        for(Enemy e: enemies)
-        {
-            if(this.rect.intersect(e.getCollisionRect()))
-            {
-                e.takeDamage(this.damage);
-                this.setInactive();
-            }
-        }
     }
 
     public void checkForCollisionWithScreenEdges()

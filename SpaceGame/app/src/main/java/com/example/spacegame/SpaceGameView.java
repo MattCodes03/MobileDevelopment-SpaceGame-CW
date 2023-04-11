@@ -11,13 +11,12 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RectF;
-import android.os.Looper;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.widget.Toast;
 
+import com.example.spacegame.entities.AngleMovingObject;
 import com.example.spacegame.entities.Bomb;
 import com.example.spacegame.entities.Bullet;
 import com.example.spacegame.entities.Enemy;
@@ -25,8 +24,9 @@ import com.example.spacegame.entities.Ally;
 import com.example.spacegame.entities.Healable;
 import com.example.spacegame.entities.Projectile;
 import com.example.spacegame.entities.SpaceShip;
+import com.example.spacegame.entities.ScreenObjTypeEnum;
 
-import java.util.logging.Handler;
+import java.util.ArrayList;
 
 public class SpaceGameView extends SurfaceView implements Runnable{
 
@@ -50,7 +50,6 @@ public class SpaceGameView extends SurfaceView implements Runnable{
     private Bitmap bitmapback;
 
     static SpaceShip spaceShip;
-    Bullet bullet;
 
     Bomb[] bombs;
 
@@ -67,9 +66,15 @@ public class SpaceGameView extends SurfaceView implements Runnable{
     boolean allySpawned;
 
     // holds current active enemies object on screen
-    private static Enemy[] currentEnemies;
-    private static Ally ally;
+    //private static Enemy[] currentEnemies;
+    private ArrayList<Enemy> currentEnemies=new ArrayList<>();
 
+//    private static Ally[] currentAllies;
+    private ArrayList<Ally> currentAllies=new ArrayList<>();
+
+    private static long downTime;
+
+    private ArrayList<Bullet> bulletArrayList=new ArrayList<>();
 
     public SpaceGameView(Context context, int x, int y) {
         super(context);
@@ -92,13 +97,13 @@ public class SpaceGameView extends SurfaceView implements Runnable{
         healsConsumed++;
     }
 
-    public static Enemy[] getEnemies()
+    public ArrayList<Enemy> getEnemies()
     {
-        return currentEnemies;
+        return this.currentEnemies;
     }
-    public static Ally getAlly()
+    public ArrayList<Ally> getAllies()
     {
-        return ally;
+        return this.currentAllies;
     }
 
     public boolean checkIsOnFreeSurface(RectF rect) {
@@ -109,7 +114,6 @@ public class SpaceGameView extends SurfaceView implements Runnable{
     private void initLevel()
     {
         spaceShip = new SpaceShip(context, this, screenX, screenY);
-        bullet = new Bullet(context, spaceShip.getX(), spaceShip.getY(), 100, Projectile.ProjectileType.Bullet);
         allySpawned = false;
         startWave();
     }
@@ -144,22 +148,30 @@ public class SpaceGameView extends SurfaceView implements Runnable{
 
     private void generateNewEnemiesWave()
     {
-        currentEnemies = new Enemy[3];
-        this.waveEnemies=3;
-        this.currentWave+=1;
+        if (this.currentEnemies.isEmpty()){
+            this.waveEnemies=3;
+            this.currentWave+=1;
 
-        for(int i=0; i<3; i++){
-            currentEnemies[i] = new Enemy(context,this,screenX,screenY);
-        }
-        for(Enemy enemy:currentEnemies){
-            enemy.setStatus(true);
+            for(int i=0; i<3; i++){
+                this.currentEnemies.add(new Enemy(context,this,screenX,screenY));
+            }
+            for(Enemy enemy:currentEnemies){
+                enemy.setStatus(true);
+            }
         }
     }
 
     private void generateNewAlliesWave()
     {
-        ally = new Ally(context,this,screenX,screenY);
-        ally.setStatus(true);
+        if (this.currentAllies.isEmpty()){
+
+            for(int i=0; i<1; i++){
+                currentAllies.add(new Ally(context,this,screenX,screenY));
+            }
+            for(Ally Ally:currentAllies){
+                Ally.setStatus(true);
+            }
+        }
     }
 
     public static SpaceShip getPlayer()
@@ -191,14 +203,13 @@ public class SpaceGameView extends SurfaceView implements Runnable{
 
     private void update()
     {
-
         // Check to see if player health is over 100, this will be true once a healable item has been consumed
         if(spaceShip.getHealth() > 100)
         {
             this.lives++;
             spaceShip.setHealth(100);
         }
-        
+
         if(spaceShip.getHealth() <= 0 && this.lives > 0)
         {
             this.lives--;
@@ -210,19 +221,20 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             endGame("Defeat");
         }
 
-        for(Enemy enemy : currentEnemies)
-        {
-            if(enemy.getHealth() <= 0 && enemy.getStatus())
+        synchronized (currentEnemies){
+            for(Enemy enemy : currentEnemies)
             {
-                enemy.setStatus(false);
-                this.waveEnemies--;
-                this.score+=10;
+                if(enemy.getHealth() <= 0 && enemy.getStatus())
+                {
+                    enemy.setStatus(false);
+                    this.waveEnemies--;
+                    this.score+=10;
+                }
             }
-        }
-
-        if(this.currentWave == 8 && this.waveEnemies <= 0)
-        {
-            endGame("Victory");
+            if(this.currentWave == 8 && this.currentEnemies.isEmpty())
+            {
+                endGame("Victory");
+            }
         }
 
         if (this.waveEnemies==0 && this.currentWave < 8){
@@ -238,9 +250,10 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             healable.update(fps);
         }
 
-        if(bullet.getStatus())
+        // Spawn Player Ally once points reach 50
+        if(this.score == 50 && !this.allySpawned)
         {
-            bullet.update(fps);
+            generateNewAlliesWave();
         }
 
         if(this.score == 50 && !allySpawned)
@@ -283,6 +296,8 @@ public class SpaceGameView extends SurfaceView implements Runnable{
         switch(motionEvent.getAction() & MotionEvent.ACTION_MASK)
         {
             case MotionEvent.ACTION_MOVE:
+            case MotionEvent.ACTION_DOWN:
+                downTime = System.currentTimeMillis();
                 touchPoint = new PointF();
                 touchPoint.x = motionEvent.getX();
                 touchPoint.y = motionEvent.getY();
@@ -300,10 +315,15 @@ public class SpaceGameView extends SurfaceView implements Runnable{
 
                 break;
             case MotionEvent.ACTION_UP:
+                if (System.currentTimeMillis()-downTime<100){
+                    this.fireMainShipBullet();
+//                    bullet.fireBullet(fps, getAngle(touchPoint, playerPoint));
+                }
                 spaceShip.setStatus(false);
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
-                bullet.fireBullet(fps, getAngle(touchPoint, playerPoint));
+                this.fireMainShipBullet();
+//                bullet.fireBullet(fps, getAngle(touchPoint, playerPoint));
                 break;
             default:
                 break;
@@ -311,9 +331,100 @@ public class SpaceGameView extends SurfaceView implements Runnable{
         return true;
     }
 
+    private void fireMainShipBullet(){
+        Bullet bullet=new Bullet(this.context,this,screenX,screenY,spaceShip.getX()+spaceShip.getRect().width()/2,spaceShip.getY()+spaceShip.getRect().height()/2,spaceShip.getDirectionAngle(),ScreenObjTypeEnum.MainShip);
+        this.fireBullet(bullet);
+    }
+
+    public void fireBullet(Bullet bullet){
+        this.bulletArrayList.add(bullet);
+    }
+
+    public void destroyUnregisterBullet(AngleMovingObject bullet){
+
+        this.bulletArrayList.remove(bullet);
+    }
+
+    private boolean positionMatch(RectF rect1, RectF rect2){
+        boolean ret=false;
+        if ( (rect1.top>=rect2.top && rect1.top<= rect2.bottom && rect1.left>=rect2.left && rect1.left<=rect2.right)
+            || (rect1.top>=rect2.top && rect1.top<=rect2.bottom && rect1.right>=rect2.left && rect1.left<=rect2.right)
+                || (rect1.bottom>=rect2.top && rect1.bottom<=rect2.bottom && rect1.left>=rect2.left && rect1.left<=rect2.right)
+                || (rect1.bottom>=rect2.top && rect1.bottom<=rect2.bottom && rect1.right>=rect2.left && rect1.right<=rect2.right)
+        )
+        {
+            ret=true;
+        }
+        return ret;
+    }
+
+    public boolean checkBulletCollision(Bullet bullet){
+        boolean ret=false;
+        RectF rect=bullet.getRect();
+        ScreenObjTypeEnum sourceType=bullet.getSourceType();
+
+        // Enemy Bullet Collisions
+        synchronized (this.currentEnemies){
+            Enemy tmpEnemy=null;
+            if (sourceType!=ScreenObjTypeEnum.Enemy) for(Enemy enemy: this.currentEnemies )
+            {
+                if (enemy!=null && enemy.getStatus())
+                {
+                    if (this.positionMatch(rect,enemy.getRect())){
+                        ret=true;
+                        System.out.println("enemy stroke");
+                        tmpEnemy=enemy;
+                    }
+                }
+            }
+            if (tmpEnemy!=null) {
+                System.out.println("remove enemy");
+                this.currentEnemies.remove(tmpEnemy);
+                System.out.println("kill enemy");
+                tmpEnemy.kill();
+                this.score+=10;
+                System.out.println("check enemy isEmpty");
+                if (this.currentEnemies.isEmpty()){ //this.currentWave==0
+                    System.out.println("generate new enemies wave");
+                    generateNewEnemiesWave();
+                }
+            }
+        }
+
+        // Ally Bullet Collisions
+        synchronized (currentAllies){
+            Ally tmpAlly=null;
+            if (sourceType!=ScreenObjTypeEnum.Ally && sourceType != ScreenObjTypeEnum.MainShip) for(Ally ally: currentAllies )
+            {
+                if (ally!=null && ally.getStatus())
+                {
+                    if (this.positionMatch(rect,ally.getRect())){
+                        ret=true;
+                        System.out.println("ally stroke");
+                        tmpAlly=ally;
+                    }
+                }
+            }
+            if (tmpAlly!=null) {
+                this.currentAllies.remove(tmpAlly);
+                tmpAlly.kill();
+                if (this.currentAllies.isEmpty()){
+                    generateNewAlliesWave();
+                }
+            }
+        }
+
+        // Player Bullet Collisions
+        if (sourceType!=ScreenObjTypeEnum.MainShip && sourceType!=ScreenObjTypeEnum.Ally && this.positionMatch(rect,spaceShip.getRect())){
+            ret=true;
+            System.out.println("main ship stroke");
+            spaceShip.takeDamage(100);
+        }
+
+        return ret;
+    }
+
     private void draw() {
-
-
         if (ourHolder.getSurface().isValid()) {
             canvas = ourHolder.lockCanvas();
             canvas.drawColor(Color.argb(255, 26, 128, 182));
@@ -325,13 +436,7 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             // Draw Player
             canvas.drawBitmap(spaceShip.getBitmap(), spaceShip.getX(), spaceShip.getY(), paint);
             paint.setColor(Color.argb(150, 255, 255, 255));
-            //canvas.drawRect(spaceShip.getCollisionRect(), paint);
 
-            // Draw Bullet
-            if (bullet.getStatus()) {
-                paint.setColor(Color.argb(255, 255, 255, 0));
-                canvas.drawBitmap(bullet.getBitmap(), bullet.getShootingX(), bullet.getShootingY(), paint);
-            }
 
             // Draw Bombs
             for (Bomb bomb : bombs) {
@@ -352,20 +457,34 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             }
 
             // draw enemies
-            for(Enemy enemy: currentEnemies )
-            {
-                if (enemy!=null && enemy.getStatus())
+            synchronized (currentEnemies){
+                for(Enemy enemy: currentEnemies )
                 {
-                    canvas.drawBitmap(enemy.getBitmap(),enemy.getRect().left,enemy.getRect().top,this.paint);
+                    if (enemy!=null && enemy.getStatus())
+                    {
+                        canvas.drawBitmap(enemy.getBitmap(),enemy.getRect().left,enemy.getRect().top,this.paint);
+                    }
                 }
             }
 
-            // Draw Ally
-            if (ally!=null && ally.getStatus())
-            {
-                canvas.drawBitmap(ally.getBitmap(),ally.getRect().left,ally.getRect().top,this.paint);
-            }
+            synchronized (currentAllies){
+                for(Ally ally: currentAllies )
+                {
+                    if (ally!=null && ally.getStatus())
+                    {
+                        canvas.drawBitmap(ally.getBitmap(),ally.getRect().left,ally.getRect().top,this.paint);
+                    }
+                }
+             }
 
+            synchronized (this.bulletArrayList){
+                for(int i = 0; i < this.bulletArrayList.size(); i++){
+                    if (bulletArrayList.get(i).getStatus()){
+                        Bullet bullet = bulletArrayList.get(i);
+                        canvas.drawBitmap(bullet.getBitmap(),bullet.getRect().left,bullet.getRect().top,this.paint);
+                    }
+                }
+            }
             paint.setColor(Color.argb(255, 240, 219, 31));
             paint.setTextSize(50);
             canvas.drawText("Score: " + score + "   Lives: " + lives + "    Wave: "+ currentWave, 10, 50, paint);
