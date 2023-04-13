@@ -211,13 +211,6 @@ public class SpaceGameView extends SurfaceView implements Runnable{
 
     private void update()
     {
-        // Check to see if player health is over 100, this will be true once a healable item has been consumed
-        if(spaceShip.getHealth() > 100)
-        {
-            this.lives++;
-            spaceShip.setHealth(100);
-        }
-
         if(spaceShip.getHealth() <= 0 && this.lives > 0)
         {
             this.lives--;
@@ -227,6 +220,19 @@ public class SpaceGameView extends SurfaceView implements Runnable{
         if(this.lives == 0)
         {
             endGame("Defeat");
+        }
+
+
+        // Spawn Player Ally once points reach 50
+        if(this.score == 50 && !this.allySpawned)
+        {
+            generateNewAlliesWave();
+        }
+
+        if(this.score == 50 && !allySpawned)
+        {
+            allySpawned = true;
+            generateNewAlliesWave();
         }
 
         synchronized (currentEnemies){
@@ -239,6 +245,13 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             }
         }
 
+        // Check to see if player health is over 100, this will be true once a healable item has been consumed
+        if(spaceShip.getHealth() > 100)
+        {
+            this.lives++;
+            spaceShip.setHealth(100);
+        }
+
         for (Bomb bomb : bombs) {
             bomb.update(fps);
         }
@@ -246,18 +259,6 @@ public class SpaceGameView extends SurfaceView implements Runnable{
         for(Healable healable: healables)
         {
             healable.update(fps);
-        }
-
-        // Spawn Player Ally once points reach 50
-        if(this.score == 50 && !this.allySpawned)
-        {
-            generateNewAlliesWave();
-        }
-
-        if(this.score == 50 && !allySpawned)
-        {
-            allySpawned = true;
-            generateNewAlliesWave();
         }
     }
 
@@ -310,13 +311,11 @@ public class SpaceGameView extends SurfaceView implements Runnable{
             case MotionEvent.ACTION_UP:
                 if (System.currentTimeMillis()-downTime<100){
                     this.fireMainShipBullet();
-//                    bullet.fireBullet(fps, getAngle(touchPoint, playerPoint));
                 }
                 spaceShip.setStatus(false);
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
                 this.fireMainShipBullet();
-//                bullet.fireBullet(fps, getAngle(touchPoint, playerPoint));
                 break;
             default:
                 break;
@@ -501,7 +500,4 @@ public class SpaceGameView extends SurfaceView implements Runnable{
         gameThread = new Thread(this);
         gameThread.start();
     }
-
-
-
 }  // end class

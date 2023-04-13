@@ -27,10 +27,6 @@ public class Bullet extends AngleMovingObject {
         return this.sourceType;
     }
 
-//    protected void movementDebug(){
-//        System.out.println("bullet movement"+ Math.random()*10);
-//    }
-
     public void kill(){
         super.kill();
         synchronized (this.spaceGameView){

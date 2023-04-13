@@ -24,9 +24,6 @@ public class EndScreenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_end_screen);
 
-//        ActionBar actionBar = getActionBar();
-//        actionBar.hide();
-
         intent = getIntent();
         setUpScreen(intent.getStringExtra("Status"));
     }
